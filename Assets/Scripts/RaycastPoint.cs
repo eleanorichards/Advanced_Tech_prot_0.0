@@ -5,6 +5,7 @@ using UnityEngine;
 public class RaycastPoint : MonoBehaviour {
     private LayerMask ground;
     Light hit_light;
+    public GameObject hit_Object;
 
     public float max_distance = 100;
 
@@ -21,12 +22,13 @@ public class RaycastPoint : MonoBehaviour {
 
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Vector3 fwd = transform.TransformDirection(Vector3.forward);
 
-        if (Physics.Raycast(ray, out hit, max_distance, ground))
+        if (Physics.Raycast(transform.position, fwd, out hit))
         {         
             Vector3 hit_position = transform.InverseTransformPoint(hit.point);
-            Debug.Log(hit_position);
-            transform.position = hit.point;
+            //Debug.Log(hit.point);
+            hit_Object.transform.position = hit.point;
         }
     }
 }

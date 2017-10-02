@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour {
     void Start () {
         ground = LayerMask.GetMask("Ground");
         rig = GetComponent<Rigidbody>();
-        rig.freezeRotation = true;
+        //rig.freezeRotation = true;
         rig.useGravity = false;
         playerHeight = GetComponent<Collider>().bounds.size.y;
         Debug.Log(playerHeight);
