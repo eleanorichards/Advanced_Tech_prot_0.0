@@ -24,9 +24,10 @@ public class RaycastPoint : MonoBehaviour {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Vector3 fwd = transform.TransformDirection(Vector3.forward);
 
-        if (Physics.Raycast(transform.position, fwd, out hit))
+        //this will only change hit_Object's position if the raycast is hitting the floor layer mask
+        if (Physics.Raycast(transform.position, fwd, out hit, max_distance, ground))
         {         
-            Vector3 hit_position = transform.InverseTransformPoint(hit.point);
+            //Vector3 hit_position = transform.InverseTransformPoint(hit.point);
             //Debug.Log(hit.point);
             hit_Object.transform.position = hit.point;
         }
