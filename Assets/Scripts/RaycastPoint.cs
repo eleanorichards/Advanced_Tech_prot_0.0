@@ -21,7 +21,7 @@ public class RaycastPoint : MonoBehaviour {
     {
 
         RaycastHit hit;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Vector3 fwd = transform.TransformDirection(Vector3.forward);
 
         //this will only change hit_Object's position if the raycast is hitting the floor layer mask
