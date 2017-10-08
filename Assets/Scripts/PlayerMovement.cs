@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour {
     private bool grounded = false;
     private float speed = 10.0f;
     private LayerMask ground;
+
     //CAM variables
     private float pitch;
     private float yaw;
@@ -28,7 +29,7 @@ public class PlayerMovement : MonoBehaviour {
         //rig.freezeRotation = true;
         rig.useGravity = false;
         playerHeight = GetComponent<Collider>().bounds.size.y;
-        Debug.Log(playerHeight);
+        //Debug.Log(playerHeight);
     }
    
 
@@ -38,9 +39,7 @@ public class PlayerMovement : MonoBehaviour {
         pitch -= sensitivity * Input.GetAxis("Mouse Y");
 
         transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
-        
 
-        
         // Calculate how fast we should be moving
         Vector3 targetVelocity = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         targetVelocity = transform.TransformDirection(targetVelocity);
@@ -70,8 +69,7 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     void OnCollisionStay()
-    {
-        
+    {       
         grounded = true;
     }
 

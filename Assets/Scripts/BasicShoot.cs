@@ -6,9 +6,12 @@ public class BasicShoot : MonoBehaviour {
 
     public GameObject bullet;
     public GameObject gun;
+    public string current_bullet_type = "";
 
     public float force_magnitude = 5.0f;
     private Rigidbody bullet_rig;
+
+
 
     // Use this for initialization
     void Start () {
@@ -20,12 +23,8 @@ public class BasicShoot : MonoBehaviour {
     {
         if (Input.GetButtonDown("Fire1")) 
         {
-            Rigidbody bullet_clone = (Rigidbody)Instantiate(bullet_rig, gun.transform.position, transform.rotation);
+            Rigidbody bullet_clone = Instantiate(bullet_rig, gun.transform.position, transform.rotation);
             bullet_clone.velocity = gun.transform.forward * force_magnitude;
-            Debug.Log(bullet_clone.velocity);
-           // bullet_rig.AddForce(gun.transform.forward * force_magnitude, ForceMode.Impulse);
         }
-
-
 	}
 }
