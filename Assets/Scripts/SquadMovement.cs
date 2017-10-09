@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SquadMovement : MonoBehaviour {
 
-    private Vector3 goal = new Vector3(-5.5f, 0.0f, 2.2f);
+   
 
 
     private GameObject[] enemies;
@@ -12,6 +12,8 @@ public class SquadMovement : MonoBehaviour {
 
     private GameObject[] cover_zones;
     private GameObject closest_cover;
+    private CoverChecker cover_checker;
+
     private float distance = Mathf.Infinity;
 
     private bool in_cover = false;
@@ -21,17 +23,22 @@ public class SquadMovement : MonoBehaviour {
     // Use this for initialization
     void Start () {
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-        agent.destination = goal;
-        
+        cover_zones = GameObject.FindGameObjectsWithTag("Cover");
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update () {
         if(!in_cover)
         {
+            Debug.Log("searching");
+
             //FindNearestCover();
             //agent.destination = closest_cover.transform.position;
             agent.SetDestination(FindNearestCover());
+        }
+        else
+        {
+            Debug.Log("cover foudn. Standing for orders");
         }
 
     }
@@ -59,22 +66,27 @@ public class SquadMovement : MonoBehaviour {
 
     Vector3 FindNearestCover()
     {
-        cover_zones = GameObject.FindGameObjectsWithTag("Cover");
 
         for (int i = 0; i < cover_zones.Length; i++)
         {
-            Vector3 diff = cover_zones[i].transform.position - transform.position;
-            float curDistance = diff.sqrMagnitude;
-            if (curDistance < distance)
-            {
-                closest_cover = cover_zones[i];
-                distance = curDistance;
-            }
-            Debug.Log(curDistance);
-            Debug.Log(closest_cover);
+            //cover_checker = cover_zones[i].GetComponent<CoverChecker>();
+            //if (cover_checker.pointActive())
+           // {
+                Vector3 diff = cover_zones[i].transform.position - transform.position;
+                float curDistance = diff.sqrMagnitude;
+                if (curDistance < distance)
+                {
+                    closest_cover = cover_zones[i];
+                    distance = curDistance;
+                }
+                //Debug.Log(curDistance);
+                //Debug.Log(closest_cover);
+          //  }
         }
         return closest_cover.transform.position;
     }
+
+
 
     void OnTriggerEnter(Collider col)
     {
@@ -83,6 +95,8 @@ public class SquadMovement : MonoBehaviour {
             in_cover = true;
         }
     }
+
+
 
     void OnTriggerExit(Collider col)
     {
