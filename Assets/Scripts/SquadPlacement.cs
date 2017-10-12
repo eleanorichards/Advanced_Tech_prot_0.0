@@ -33,8 +33,6 @@ public class SquadPlacement : MonoBehaviour
 
     void OnCollisionEnter(Collision col)
     {
-        
-
         if (col.gameObject.tag == "Ground")
         {
             Debug.Log("Squaddie placed on ground");

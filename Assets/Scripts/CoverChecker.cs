@@ -6,7 +6,6 @@ public class CoverChecker : MonoBehaviour {
 
     private GameObject coverPoint;
     private GameObject[] enemies;
-    private CoverManager coverManager;
     private GameObject closest_enemy;
 
     private float curDistance;
@@ -17,9 +16,8 @@ public class CoverChecker : MonoBehaviour {
     private Renderer obj_renderer;
     // Use this for initialization
     void Start () {
-        coverPoint = transform.Find("Quad").gameObject;
+        //coverPoint = transform.Find("Quad").gameObject;
         position = transform.position;
-        obj_renderer = coverPoint.GetComponent<Renderer>();
         enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
         //coverManager = GetComponentInParent<CoverManager>();
@@ -86,16 +84,11 @@ public class CoverChecker : MonoBehaviour {
     void OnTriggerEnter(Collider col)
     {
         active = false;
-        //coverPoint.GetComponent<Renderer>().material.color = Color.green;
-        //coverManager.SetCoverPointInactive(gameObject);
     }
 
     void OnTriggerExit(Collider col)
     {
         active = true;
-        //coverPoint.GetComponent<Renderer>().material.color = Color.red;
-       //coverManager.SetCoverPointActive(gameObject);
-
     }
 
 
