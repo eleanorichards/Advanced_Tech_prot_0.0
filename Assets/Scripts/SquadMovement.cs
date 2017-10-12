@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class SquadMovement : MonoBehaviour {
 
-   
-
-
     private GameObject[] enemies;
     private GameObject closest_enemy;
 
@@ -21,30 +18,61 @@ public class SquadMovement : MonoBehaviour {
     UnityEngine.AI.NavMeshAgent agent;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         cover_zones = GameObject.FindGameObjectsWithTag("Cover");
+
     }
 
     // Update is called once per frame
-    void Update () {
-        if(!in_cover)
-        {
-            Debug.Log("searching");
+    void Update() {
 
-            //FindNearestCover();
-            //agent.destination = closest_cover.transform.position;
+
+    }
+
+    void ActivateState(string statename)
+    {
+        if (statename == "Find Cover")
+        {
+            RunToCover();
+        }
+        else if (statename == "Follow Leader")
+        {
+
+        }
+        else if (statename == "Attack Enemies")
+        {
+
+        }
+    }
+
+
+    void RunToCover()
+    {
+        if (!in_cover)
+        {
             agent.SetDestination(FindNearestCover());
         }
         else
         {
-            Debug.Log("cover foudn. Standing for orders");
+            Debug.Log("cover found. Standing for orders");
         }
-
     }
 
 
-    void FindNearestEnemy()
+    void FollowLeader()
+    {
+
+    }
+
+    void AttackEnemies()
+    {
+        agent.SetDestination(FindNearestEnemy());
+        Debug.Log("Getting Enemies");
+    }
+
+
+    Vector3 FindNearestEnemy()
     {
         enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
@@ -58,9 +86,8 @@ public class SquadMovement : MonoBehaviour {
                 closest_enemy = enemies[i];
                 distance = curDistance;
             }
-            Debug.Log(curDistance);
-            Debug.Log(closest_enemy);
         }
+        return closest_cover.transform.position;
     }
 
 
@@ -69,19 +96,15 @@ public class SquadMovement : MonoBehaviour {
 
         for (int i = 0; i < cover_zones.Length; i++)
         {
-            //cover_checker = cover_zones[i].GetComponent<CoverChecker>();
-            //if (cover_checker.pointActive())
-           // {
-                Vector3 diff = cover_zones[i].transform.position - transform.position;
-                float curDistance = diff.sqrMagnitude;
-                if (curDistance < distance)
-                {
-                    closest_cover = cover_zones[i];
-                    distance = curDistance;
-                }
-                //Debug.Log(curDistance);
-                //Debug.Log(closest_cover);
-          //  }
+
+            Vector3 diff = cover_zones[i].transform.position - transform.position;
+            float curDistance = diff.sqrMagnitude;
+            if (curDistance < distance)
+            {
+                closest_cover = cover_zones[i];
+                distance = curDistance;
+            }
+
         }
         return closest_cover.transform.position;
     }
