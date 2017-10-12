@@ -31,7 +31,7 @@ public class CoverChecker : MonoBehaviour {
         //{
         //    //CheckEnemyProximity();
         //}
-        InvokeRepeating("CheckEnemyProximity", 1.0f, 1.0f);
+        //InvokeRepeating("CheckEnemyProximity", 1.0f, 1.0f);
 		
 	}
 
@@ -63,23 +63,23 @@ public class CoverChecker : MonoBehaviour {
 
     void setWarningZone(float enemyRange)
     {
-        if(enemyRange <= 10.0f)
-        {
-            Debug.Log("Enemy Close");
-            obj_renderer.material.color = Color.red;
-        }
-        else if (enemyRange <= 20.0f)
-        {
-            Debug.Log("Enemy Closish");
+        //if(enemyRange <= 10.0f)
+        //{
+        //    Debug.Log("Enemy Close");
+        //    obj_renderer.material.color = Color.red;
+        //}
+        //else if (enemyRange <= 20.0f)
+        //{
+        //    Debug.Log("Enemy Closish");
 
-            obj_renderer.material.color = Color.yellow;
-        }
-        else if (enemyRange <= 30.0f)
-        {
-            Debug.Log("Enemy Far");
+        //    obj_renderer.material.color = Color.yellow;
+        //}
+        //else if (enemyRange <= 30.0f)
+        //{
+        //    Debug.Log("Enemy Far");
 
-            obj_renderer.material.color = Color.green;
-        }
+        //    obj_renderer.material.color = Color.green;
+        //}
     }
 
 

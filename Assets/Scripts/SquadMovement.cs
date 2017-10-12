@@ -27,7 +27,7 @@ public class SquadMovement : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
+    void FixedUpdate () {
         if(!in_cover)
         {
             Debug.Log("searching");
@@ -38,7 +38,7 @@ public class SquadMovement : MonoBehaviour {
         }
         else
         {
-            Debug.Log("cover foudn. Standing for orders");
+            Debug.Log("cover found. Standing for orders");
         }
 
     }
@@ -61,6 +61,24 @@ public class SquadMovement : MonoBehaviour {
             Debug.Log(curDistance);
             Debug.Log(closest_enemy);
         }
+    }
+
+
+    void FindEnemyCoverDistance()
+    {
+        //for (int i = 0; i<enemies.Length; i++)
+        //    {
+        //        Vector3 diff = enemies[i].transform.position - position;
+        //        curDistance = diff.sqrMagnitude;
+        //        if (curDistance<distance)
+        //        {
+        //            closest_enemy = enemies[i];
+        //            distance = curDistance;
+        //        }
+        //        Debug.Log(curDistance);
+        //        setWarningZone(distance);
+        //    }
+
     }
 
 
