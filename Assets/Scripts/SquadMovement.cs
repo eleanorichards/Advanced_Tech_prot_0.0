@@ -30,10 +30,11 @@ public class SquadMovement : MonoBehaviour {
 
     }
 
-    void ActivateState(string statename)
+    public void ActivateState(string statename)
     {
         if (statename == "Find Cover")
         {
+            Debug.Log("running");
             RunToCover();
         }
         else if (statename == "Follow Leader")
@@ -42,7 +43,7 @@ public class SquadMovement : MonoBehaviour {
         }
         else if (statename == "Attack Enemies")
         {
-
+            AttackEnemies();
         }
     }
 
@@ -87,7 +88,7 @@ public class SquadMovement : MonoBehaviour {
                 distance = curDistance;
             }
         }
-        return closest_cover.transform.position;
+        return closest_enemy.transform.position;
     }
 
 

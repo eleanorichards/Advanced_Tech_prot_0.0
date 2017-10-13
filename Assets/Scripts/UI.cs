@@ -8,6 +8,7 @@ public class UI : MonoBehaviour {
     public GameObject Canvas;
 
     public Text centreDisplay;
+    private GameObject[] Squad;
 
 	// Use this for initialization
 	void Start () {
@@ -21,15 +22,34 @@ public class UI : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.F1))
         {
             centreDisplay.text = "Follow Leader!";
+            SendMessageToSquad("Follow Leader");
         }
-        if (Input.GetKeyDown(KeyCode.F2))
+        else if (Input.GetKeyDown(KeyCode.F2))
         {
-            centreDisplay.text = "Follow Leader!";
+            centreDisplay.text = "Find Cover!";
+            SendMessageToSquad("Find Cover");
+
         }
-        if (Input.GetKeyDown("Fire1"))
+        else if (Input.GetKeyDown(KeyCode.F3))
         {
-            centreDisplay.text = "Follow Leader!";
+            centreDisplay.text = "Attack!";
+            SendMessageToSquad("Attack");
+        }
+        else
+        {
+            centreDisplay.text = "";
         }
 
+    }
+
+
+    void SendMessageToSquad(string message)
+    {
+        Squad = GameObject.FindGameObjectsWithTag("Ally");
+        for(int i = 0; i < Squad.Length; i++)
+        {
+            Squad[i].GetComponent<SquadMovement>().ActivateState(message);
+            Debug.Log(message + "sent");
+        }
     }
 }
