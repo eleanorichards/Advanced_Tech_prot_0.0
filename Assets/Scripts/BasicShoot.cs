@@ -23,19 +23,18 @@ public class BasicShoot : MonoBehaviour {
 	void Update ()
     {
         RaycastHit hit;
-        Debug.DrawRay(this.transform.position, this.transform.forward * view_distance, Color.white);
+        Debug.DrawRay(gun.transform.position, gun.transform.forward * view_distance, Color.blue);
 
         if (Physics.Raycast(gun.transform.position, gun.transform.forward, out hit, view_distance))
         {
             if(hit.collider.gameObject.tag == "Ally")
             {
                 if(Input.GetKey(KeyCode.Q))
-                {             
-                    Debug.Log("I'm trying");      
+                {
+                    rend = hit.collider.gameObject.GetComponent<Renderer>();
+                    rend.material.color = Color.red;
                     hit.collider.gameObject.GetComponent<SquadMovement>().SetLeader(true);
                 }
-
-                Debug.Log("ally found");
                 rend = hit.collider.gameObject.GetComponent<Renderer>();
                 rend.material.color = Color.green;
             }

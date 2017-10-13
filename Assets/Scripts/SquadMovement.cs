@@ -15,39 +15,40 @@ public class SquadMovement : MonoBehaviour {
     private float rotation_speed = 10.0f;
     private bool in_cover = false;
     private bool is_leader = false;
+    private string statename = "";
 
     public float search_radius = 10.0f;
-
+    public float bump_radius = 1.0f;
     UnityEngine.AI.NavMeshAgent agent;
 
     // Use this for initialization
-    void Start() {
+    void Start()
+    {
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         cover_zones = GameObject.FindGameObjectsWithTag("Cover");
-
     }
 
     // Update is called once per frame
-    void Update() {
-
-
-    }
-
-    public void ActivateState(string statename)
+    void Update()
     {
         if (statename == "Find Cover")
         {
-            Debug.Log("running");
             RunToCover();
         }
         else if (statename == "Follow Leader")
         {
             FollowLeader();
         }
-        else if (statename == "Attack Enemies")
+        else if (statename == "Attack")
         {
             AttackEnemies();
         }
+
+    }
+
+    public void ActivateState(string _statename)
+    {
+        statename = _statename;
     }
 
 
@@ -72,7 +73,12 @@ public class SquadMovement : MonoBehaviour {
         {
             if(targets[i].GetComponent<SquadMovement>().GetLeader() && targets[i] != this.gameObject)
             {
-                agent.SetDestination(targets[i].transform.position);
+                Vector3 distance = targets[i].transform.position - transform.position;
+                float curDistance = distance.sqrMagnitude;
+                if (curDistance > bump_radius)
+                {
+                    agent.SetDestination(targets[i].transform.position);
+                }
             }
 
         }
@@ -83,8 +89,7 @@ public class SquadMovement : MonoBehaviour {
     }
 
     void AttackEnemies()
-    {
-        
+    {        
         agent.SetDestination(FindNearestEnemy());
         Debug.Log("Getting Enemies");
     }
@@ -115,7 +120,6 @@ public class SquadMovement : MonoBehaviour {
 
     Vector3 FindNearestCover()
     {
-
         for (int i = 0; i < cover_zones.Length; i++)
         {
             Vector3 diff = cover_zones[i].transform.position - transform.position;
