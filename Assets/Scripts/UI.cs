@@ -14,35 +14,38 @@ public class UI : MonoBehaviour {
 	void Start () {
         //INVESTIGATION font
         //FindCover = GameObject.Find("FindCover");
-	}
+        centreDisplay.enabled = false;
+
+    }
 
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            centreDisplay.text = "Follow Leader!";
+            StartCoroutine(ShowMessage("Follow Leader!", 1.0f));
             SendMessageToSquad("Follow Leader");
         }
         else if (Input.GetKeyDown(KeyCode.F2))
         {
-            centreDisplay.text = "Find Cover!";
+            StartCoroutine(ShowMessage("Find Cover!", 1.0f));
             SendMessageToSquad("Find Cover");
-
         }
         else if (Input.GetKeyDown(KeyCode.F3))
         {
-            centreDisplay.text = "Attack!";
+            StartCoroutine(ShowMessage("Attack!", 1.0f));
             SendMessageToSquad("Attack");
         }
-        else
-        {
-            centreDisplay.text = "";
-        }
-
     }
 
+    IEnumerator ShowMessage(string message, float delay)
+    {
+        centreDisplay.text = message;
+        centreDisplay.enabled = true;
+        yield return new WaitForSeconds(delay);
+        centreDisplay.enabled = false;
 
+    }
     void SendMessageToSquad(string message)
     {
         Squad = GameObject.FindGameObjectsWithTag("Ally");

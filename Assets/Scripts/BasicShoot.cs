@@ -9,10 +9,11 @@ public class BasicShoot : MonoBehaviour {
     public string current_bullet_type = "";
 
     public float force_magnitude = 5.0f;
+
     private Rigidbody bullet_rig;
+    private float view_distance = 20.0f;
 
-
-
+    Renderer rend = null;
     // Use this for initialization
     void Start () {
         bullet_rig = bullet.GetComponent<Rigidbody>();
@@ -21,10 +22,35 @@ public class BasicShoot : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+        RaycastHit hit;
+        Debug.DrawRay(this.transform.position, this.transform.forward * view_distance, Color.white);
+
+        if (Physics.Raycast(gun.transform.position, gun.transform.forward, out hit, view_distance))
+        {
+            if(hit.collider.gameObject.tag == "Ally")
+            {
+                if(Input.GetKey(KeyCode.Q))
+                {             
+                    Debug.Log("I'm trying");      
+                    hit.collider.gameObject.GetComponent<SquadMovement>().SetLeader(true);
+                }
+
+                Debug.Log("ally found");
+                rend = hit.collider.gameObject.GetComponent<Renderer>();
+                rend.material.color = Color.green;
+            }
+        }
         if (Input.GetButtonDown("Fire1")) 
         {
-            Rigidbody bullet_clone = Instantiate(bullet_rig, gun.transform.position, transform.rotation);
-            bullet_clone.velocity = gun.transform.forward * force_magnitude;
+            fireGun();
         }
+
 	}
+
+
+    void fireGun()
+    {
+        Rigidbody bullet_clone = Instantiate(bullet_rig, gun.transform.position, transform.rotation);
+        bullet_clone.velocity = gun.transform.forward * force_magnitude;
+    }
 }

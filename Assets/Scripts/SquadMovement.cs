@@ -10,10 +10,13 @@ public class SquadMovement : MonoBehaviour {
     private GameObject[] cover_zones;
     private GameObject closest_cover;
     private CoverChecker cover_checker;
-
+    private GameObject[] squaddies = null;
     private float distance = Mathf.Infinity;
-
+    private float rotation_speed = 10.0f;
     private bool in_cover = false;
+    private bool is_leader = false;
+
+    public float search_radius = 10.0f;
 
     UnityEngine.AI.NavMeshAgent agent;
 
@@ -39,7 +42,7 @@ public class SquadMovement : MonoBehaviour {
         }
         else if (statename == "Follow Leader")
         {
-
+            FollowLeader();
         }
         else if (statename == "Attack Enemies")
         {
@@ -63,11 +66,25 @@ public class SquadMovement : MonoBehaviour {
 
     void FollowLeader()
     {
+        GameObject[] targets = GameObject.FindGameObjectsWithTag("Ally");
+
+        for (int i = 0; i < targets.Length; i++)
+        {
+            if(targets[i].GetComponent<SquadMovement>().GetLeader() && targets[i] != this.gameObject)
+            {
+                agent.SetDestination(targets[i].transform.position);
+            }
+
+        }
+
+
+        //move towards the player
 
     }
 
     void AttackEnemies()
     {
+        
         agent.SetDestination(FindNearestEnemy());
         Debug.Log("Getting Enemies");
     }
@@ -76,12 +93,16 @@ public class SquadMovement : MonoBehaviour {
     Vector3 FindNearestEnemy()
     {
         enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
+        //Collider[] hitColliders = Physics.OverlapSphere(transform.position, search_radius);
+        
         for (int i = 0; i < enemies.Length; i++)
         {
+            //if(hitColliders[i].tag == "Enemy")
+            //{
+                
+            //}
             Vector3 diff = enemies[i].transform.position - transform.position;
             float curDistance = diff.sqrMagnitude;
-            float distance = 0.0f;
             if (curDistance < distance)
             {
                 closest_enemy = enemies[i];
@@ -97,7 +118,6 @@ public class SquadMovement : MonoBehaviour {
 
         for (int i = 0; i < cover_zones.Length; i++)
         {
-
             Vector3 diff = cover_zones[i].transform.position - transform.position;
             float curDistance = diff.sqrMagnitude;
             if (curDistance < distance)
@@ -105,11 +125,33 @@ public class SquadMovement : MonoBehaviour {
                 closest_cover = cover_zones[i];
                 distance = curDistance;
             }
-
         }
         return closest_cover.transform.position;
     }
 
+
+    public void SetLeader(bool setLeader)
+    {
+        squaddies = GameObject.FindGameObjectsWithTag("Ally");
+        for(int i = 0; i < squaddies.Length; i++)
+        {
+            if(squaddies[i] != this.gameObject)
+            {
+                if(squaddies[i].gameObject.GetComponent<SquadMovement>().GetLeader())
+                {
+                    squaddies[i].gameObject.GetComponent<SquadMovement>().SetLeader(false);
+                }
+            }
+        }
+        is_leader = setLeader;
+        Debug.Log("set a leader");
+    }
+
+
+    public bool GetLeader()
+    {
+        return is_leader;
+    }
 
 
     void OnTriggerEnter(Collider col)
@@ -119,7 +161,6 @@ public class SquadMovement : MonoBehaviour {
             in_cover = true;
         }
     }
-
 
 
     void OnTriggerExit(Collider col)

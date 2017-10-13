@@ -35,37 +35,8 @@ public class SquadPlacement : MonoBehaviour
     {
         if (col.gameObject.tag == "Ground")
         {
-            Debug.Log("Squaddie placed on ground");
             Instantiate(SquadMember, transform.position, transform.rotation);
             Destroy(gameObject);
         }
     }
-
-
-    //
-
-    //Wall PLACEMENT NOW DEPRECATED AS IT'S USELESS
-
-
-    //
-    //if (col.gameObject.tag == "Wall")
-    //{
-    //    Debug.Log("wALL HIT");
-    //    RaycastHit hit;
-    //    //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-    //    Vector3 down = transform.TransformDirection(-Vector3.up);
-
-    //    //if (Physics.Raycast(transform.position, down, out hit, max_distance, ground))
-    //    if (Physics.SphereCast(transform.position, cast_radius, down, out hit, max_distance, ground))
-    //    {
-    //        Debug.Log("Squaddie Inserted ;)");
-    //        //Vector3 hit_position = transform.InverseTransformPoint(hit.point);
-    //        Vector3 Squaddie_pos = hit.point;
-    //        //Debug.Log(hit.point);
-    //        Instantiate(SquadMember, Squaddie_pos, transform.rotation);
-    //    }
-    //    Destroy(gameObject);
-    //}
-
-
 }

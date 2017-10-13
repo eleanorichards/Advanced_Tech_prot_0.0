@@ -75,8 +75,6 @@ public class PlayerMovement : MonoBehaviour {
 
     float CalculateJumpVerticalSpeed()
     {
-        // From the jump height and gravity we deduce the upwards speed 
-        // for the character to reach at the apex.
         return Mathf.Sqrt(2 * jumpHeight * gravity);
     }
 
