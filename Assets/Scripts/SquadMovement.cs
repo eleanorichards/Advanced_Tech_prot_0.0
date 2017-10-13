@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SquadMovement : MonoBehaviour {
+public class SquadMovement : MonoBehaviour
+{
 
     private GameObject[] enemies;
     private GameObject closest_enemy;
@@ -71,7 +72,7 @@ public class SquadMovement : MonoBehaviour {
 
         for (int i = 0; i < targets.Length; i++)
         {
-            if(targets[i].GetComponent<SquadMovement>().GetLeader() && targets[i] != this.gameObject)
+            if (targets[i].GetComponent<SquadMovement>().GetLeader() && targets[i] != this.gameObject)
             {
                 Vector3 distance = targets[i].transform.position - transform.position;
                 float curDistance = distance.sqrMagnitude;
@@ -89,7 +90,7 @@ public class SquadMovement : MonoBehaviour {
     }
 
     void AttackEnemies()
-    {        
+    {
         agent.SetDestination(FindNearestEnemy());
         Debug.Log("Getting Enemies");
     }
@@ -99,12 +100,12 @@ public class SquadMovement : MonoBehaviour {
     {
         enemies = GameObject.FindGameObjectsWithTag("Enemy");
         //Collider[] hitColliders = Physics.OverlapSphere(transform.position, search_radius);
-        
+
         for (int i = 0; i < enemies.Length; i++)
         {
             //if(hitColliders[i].tag == "Enemy")
             //{
-                
+
             //}
             Vector3 diff = enemies[i].transform.position - transform.position;
             float curDistance = diff.sqrMagnitude;
@@ -137,11 +138,11 @@ public class SquadMovement : MonoBehaviour {
     public void SetLeader(bool setLeader)
     {
         squaddies = GameObject.FindGameObjectsWithTag("Ally");
-        for(int i = 0; i < squaddies.Length; i++)
+        for (int i = 0; i < squaddies.Length; i++)
         {
-            if(squaddies[i] != this.gameObject)
+            if (squaddies[i] != this.gameObject)
             {
-                if(squaddies[i].gameObject.GetComponent<SquadMovement>().GetLeader())
+                if (squaddies[i].gameObject.GetComponent<SquadMovement>().GetLeader())
                 {
                     squaddies[i].gameObject.GetComponent<SquadMovement>().SetLeader(false);
                 }
@@ -160,7 +161,7 @@ public class SquadMovement : MonoBehaviour {
 
     void OnTriggerEnter(Collider col)
     {
-        if(col.gameObject.tag == "Cover")
+        if (col.gameObject.tag == "Cover")
         {
             in_cover = true;
         }
