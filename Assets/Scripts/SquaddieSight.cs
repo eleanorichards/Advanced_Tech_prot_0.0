@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SquaddieSight : MonoBehaviour {
-    public float FOV = 65.0f;
+    public float FOV = 60.0f;
     public float immediate_range = 5.0f;
     private Vector3 ray_direction = Vector3.zero;
-    public float visibilty_range = 25.0f;
+    public float visibilty_range = 100.0f;
     private GameObject enemy;
 
     public bool enemy_in_view = false;
@@ -19,40 +19,71 @@ public class SquaddieSight : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         CanSeePlayer();
-	}
+
+    }
 
     public void CanSeePlayer()
     {
         RaycastHit hit;
-        Vector3 rayDirection = Vector3.zero;
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, immediate_range);
-        for (int i = 0; i < hitColliders.Length; i++)
-        {
-            if (hitColliders[i].tag == "Enemy")
-            {
-                enemy_near = true;
-                enemy = hitColliders[i].gameObject;
-                Debug.Log("Enemy in immediate range");
-            }
-        }
-        if(enemy)
-        {
-            rayDirection = enemy.transform.position - transform.position;
-        }
 
-        if ((Vector3.Angle(rayDirection, transform.forward)) <= FOV * 0.5f)
+        Vector3 rayDirection = Vector3.zero;
+
+        Physics.Raycast(rayDirection, out hit);
+
+        float angle = Vector3.Dot(transform.forward, out hit.point.normalized);
+        float degree = Mathf.Acos(angle) * Mathf.Rad2Deg;
+
+        if (degree >= -FOV || degree <= FOV)
         {
-            // Detect if player is within the field of view
-            if (Physics.Raycast(transform.position, transform.forward, out hit, visibilty_range))
+
+            for (int i = -(int)FOV; i <= (int)FOV; i += 5)
             {
-                Debug.DrawRay(transform.position, transform.forward, Color.red, visibilty_range);
-                if (hit.transform.CompareTag("Enemy"))
+                Quaternion rotation = Quaternion.AngleAxis(i, transform.up);
+                Vector3 ray = rotation * transform.forward;
+                Debug.DrawLine(transform.position, transform.position + ray * 30, Color.red);
+                if (Physics.Raycast(transform.position, ray, out hit, 30))
                 {
-                    Debug.Log("Enemy in view");
+
+                    float vectorDistance = Vector3.SqrMagnitude(hit.point - transform.position);
+                    if (vectorDistance > visibilty_range)
+                    { // find angle at which the distance was furtherest
+                        visibilty_range = vectorDistance;
+                        angle = i;
+                    }
                 }
             }
-        }       
-
+            transform.Rotate(0f, angle, 0f);
+        }
     }
+
+    
+    //Collider[] hitColliders = Physics.OverlapSphere(transform.position, immediate_range);
+    //for (int i = 0; i < hitColliders.Length; i++)
+    //{
+    //    if (hitColliders[i].tag == "Enemy")
+    //    {
+    //        enemy_near = true;
+    //        enemy = hitColliders[i].gameObject;
+    //    }
+    //}
+    //if(enemy)
+    //{
+    //    rayDirection = enemy.transform.position - transform.position;
+    //}
+
+    //if ((Vector3.Angle(rayDirection, transform.forward)) <= FOV * 0.5f)
+    //{
+    //    // Detect if player is within the field of view
+    //    if (Physics.Raycast(rayDirection, transform.forward, out hit, visibilty_range))
+    //    {
+    //        Debug.DrawRay(transform.position, transform.forward, Color.red);
+    //        if (hit.transform.gameObject.CompareTag("Enemy"))
+    //        {
+    //            Debug.Log("Enemy in view");
+    //        }
+    //    }
+    //}       
+
+}
 
 }

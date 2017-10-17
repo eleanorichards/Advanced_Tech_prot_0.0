@@ -19,8 +19,11 @@ public class SquadMovement : MonoBehaviour
 
     private string statename = "";
     private int zone_taken = -1;
+    private int enemy_num = 0;
     public float search_radius = 10.0f;
     public float bump_radius = 1.0f;
+    public float immediate_range = 15.0f;
+
     UnityEngine.AI.NavMeshAgent agent;
 
     // Use this for initialization
@@ -57,13 +60,16 @@ public class SquadMovement : MonoBehaviour
     {
         statename = _statename;
 
-        if (statename == "Follow Leader" && following_leader)
+        if (statename == "Follow Leader")
         {
-            following_leader = false;
-        }
-        else if(statename == "Follow Leader" && !following_leader)
-        {
-            following_leader = true;
+            if(following_leader)
+            {
+                following_leader = false;
+            }
+            else if(!following_leader)
+            {
+                following_leader = true;
+            }
         }
     }
 
@@ -110,12 +116,19 @@ public class SquadMovement : MonoBehaviour
 
     void FindNearestEnemy()
     {
-        enemies = GameObject.FindGameObjectsWithTag("Enemy");
-      
-
-        for (int i = 0; i < enemies.Length; i++)
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, immediate_range);
+        for (int i = 0; i < hitColliders.Length; i++)
         {
-            
+            if (hitColliders[i].tag == "Enemy")
+            {
+                enemy_num++;
+                enemies[enemy_num] = hitColliders[i].gameObject;
+            }
+
+        }
+        for (int i = 0; i < enemy_num; i++)
+        {
+            Debug.Log("searching" + enemy_num);
             Vector3 diff = enemies[i].transform.position - transform.position;
             float curDistance = diff.sqrMagnitude;
             if (curDistance < distance)
@@ -125,6 +138,7 @@ public class SquadMovement : MonoBehaviour
                 agent.SetDestination(closest_enemy.transform.position);
             }
         }
+        
     }
 
 
