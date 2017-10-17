@@ -7,17 +7,18 @@ public class SquadMovement : MonoBehaviour
 
     private GameObject[] enemies;
     private GameObject closest_enemy;
-
     private GameObject[] cover_zones;
     private GameObject closest_cover;
-    private CoverChecker cover_checker;
     private GameObject[] squaddies = null;
+
     private float distance = Mathf.Infinity;
     private float rotation_speed = 10.0f;
     private bool in_cover = false;
     private bool is_leader = false;
-    private string statename = "";
+    private bool following_leader = false;
 
+    private string statename = "";
+    private int zone_taken = -1;
     public float search_radius = 10.0f;
     public float bump_radius = 1.0f;
     UnityEngine.AI.NavMeshAgent agent;
@@ -32,24 +33,38 @@ public class SquadMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (statename == "Find Cover")
-        {
-            RunToCover();
-        }
-        else if (statename == "Follow Leader")
+        if(following_leader)
         {
             FollowLeader();
+            Debug.Log("following");
         }
-        else if (statename == "Attack")
+        if(!following_leader || is_leader)
         {
-            AttackEnemies();
+            if (statename == "Find Cover")
+            {
+                RunToCover();
+            }          
+            else if (statename == "Attack")
+            {
+                AttackEnemies();
+            }
         }
+
 
     }
 
     public void ActivateState(string _statename)
     {
         statename = _statename;
+
+        if (statename == "Follow Leader" && following_leader)
+        {
+            following_leader = false;
+        }
+        else if(statename == "Follow Leader" && !following_leader)
+        {
+            following_leader = true;
+        }
     }
 
 
@@ -61,7 +76,7 @@ public class SquadMovement : MonoBehaviour
         }
         else
         {
-            Debug.Log("cover found. Standing for orders");
+
         }
     }
 
@@ -78,25 +93,22 @@ public class SquadMovement : MonoBehaviour
                 float curDistance = distance.sqrMagnitude;
                 if (curDistance > bump_radius)
                 {
+                    Debug.Log(curDistance);
                     agent.SetDestination(targets[i].transform.position);
                 }
             }
 
         }
-
-
-        //move towards the player
-
     }
 
     void AttackEnemies()
     {
-        agent.SetDestination(FindNearestEnemy());
+        FindNearestEnemy();
         Debug.Log("Getting Enemies");
     }
 
 
-    Vector3 FindNearestEnemy()
+    void FindNearestEnemy()
     {
         enemies = GameObject.FindGameObjectsWithTag("Enemy");
         //Collider[] hitColliders = Physics.OverlapSphere(transform.position, search_radius);
@@ -113,9 +125,10 @@ public class SquadMovement : MonoBehaviour
             {
                 closest_enemy = enemies[i];
                 distance = curDistance;
+                agent.SetDestination(closest_enemy.transform.position);
             }
         }
-        return closest_enemy.transform.position;
+        //return closest_enemy.transform.position;
     }
 
 
@@ -125,10 +138,11 @@ public class SquadMovement : MonoBehaviour
         {
             Vector3 diff = cover_zones[i].transform.position - transform.position;
             float curDistance = diff.sqrMagnitude;
-            if (curDistance < distance)
+            if (curDistance < distance && i != zone_taken)
             {
                 closest_cover = cover_zones[i];
                 distance = curDistance;
+                zone_taken = i;
             }
         }
         return closest_cover.transform.position;
@@ -173,6 +187,16 @@ public class SquadMovement : MonoBehaviour
         if (col.gameObject.tag == "Cover")
         {
             in_cover = false;
+        }
+    }
+
+
+    void OnCollisionEnter(Collision col)
+    {
+        if (col.gameObject.tag == "Enemy")
+        {
+            Debug.Log("Enemy taken");
+            Destroy(col.gameObject);
         }
     }
 }

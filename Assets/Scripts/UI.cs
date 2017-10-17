@@ -52,7 +52,6 @@ public class UI : MonoBehaviour {
         for(int i = 0; i < Squad.Length; i++)
         {
             Squad[i].GetComponent<SquadMovement>().ActivateState(message);
-            Debug.Log(message + "sent");
         }
     }
 }

@@ -35,8 +35,8 @@ public class BasicShoot : MonoBehaviour {
                     rend.material.color = Color.red;
                     hit.collider.gameObject.GetComponent<SquadMovement>().SetLeader(true);
                 }
-                rend = hit.collider.gameObject.GetComponent<Renderer>();
-                rend.material.color = Color.green;
+                //rend = hit.collider.gameObject.GetComponent<Renderer>();
+                //rend.material.color = Color.green;
             }
         }
         if (Input.GetButtonDown("Fire1")) 
