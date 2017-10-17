@@ -111,14 +111,11 @@ public class SquadMovement : MonoBehaviour
     void FindNearestEnemy()
     {
         enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        //Collider[] hitColliders = Physics.OverlapSphere(transform.position, search_radius);
+      
 
         for (int i = 0; i < enemies.Length; i++)
         {
-            //if(hitColliders[i].tag == "Enemy")
-            //{
-
-            //}
+            
             Vector3 diff = enemies[i].transform.position - transform.position;
             float curDistance = diff.sqrMagnitude;
             if (curDistance < distance)
@@ -128,7 +125,6 @@ public class SquadMovement : MonoBehaviour
                 agent.SetDestination(closest_enemy.transform.position);
             }
         }
-        //return closest_enemy.transform.position;
     }
 
 
@@ -195,7 +191,7 @@ public class SquadMovement : MonoBehaviour
     {
         if (col.gameObject.tag == "Enemy")
         {
-            Debug.Log("Enemy taken");
+            //enemy damage script
             Destroy(col.gameObject);
         }
     }
