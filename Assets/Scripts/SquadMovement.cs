@@ -9,7 +9,7 @@ public class SquadMovement : MonoBehaviour
     private GameObject[] allies = new GameObject[100];
     private GameObject[] cover_zones = new GameObject[100];
     //private Collider[] hitColliders;
-    private List<Collider> hitColliders = new List<Collider>(100);
+    private List<Collider> hitColliders = new List<Collider>(200);
 
     //private List<GameObject> enemies;
     private GameObject closest_enemy;
@@ -147,15 +147,17 @@ public class SquadMovement : MonoBehaviour
 
     Vector3 FindNearestCover()
     {
+        FindNearestEnemy();
         Vector3 closest_enemy_loc = Vector3.zero;
 
         if (FindNearestEnemy() != Vector3.zero) 
         {
-            closest_enemy_loc = FindNearestEnemy();
+            closest_enemy_loc = closest_enemy.transform.position;
         }
 
         for (int i = 0; i < cover_zones.Length; i++)
-        {            
+        {
+            Debug.Log(i);
             if(cover_zones[i])
             {
 
@@ -235,17 +237,13 @@ public class SquadMovement : MonoBehaviour
 
     void UpdateColCheck()
     {        
-        //yield return new WaitForSeconds(1);
 
         foreach (Collider hitCollider in Physics.OverlapSphere(transform.position, immediate_range))
         {
-            if (hitColliders.Count != 0)
-            {
                 if (!hitColliders.Contains(hitCollider))
                 {
                     hitColliders.Add(hitCollider);
                 }
-            }
         }
 
         enemy_num = 0;
