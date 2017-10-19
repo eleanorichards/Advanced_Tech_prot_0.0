@@ -28,9 +28,9 @@ public class SquaddieSight : MonoBehaviour {
 
         Vector3 rayDirection = Vector3.zero;
 
-        Physics.Raycast(rayDirection, out hit);
+        Physics.Raycast(rayDirection, rayDirection, out hit);
 
-        float angle = Vector3.Dot(transform.forward, out hit.point.normalized);
+        float angle = 30.0f;
         float degree = Mathf.Acos(angle) * Mathf.Rad2Deg;
 
         if (degree >= -FOV || degree <= FOV)
@@ -38,12 +38,10 @@ public class SquaddieSight : MonoBehaviour {
 
             for (int i = -(int)FOV; i <= (int)FOV; i += 5)
             {
-                Quaternion rotation = Quaternion.AngleAxis(i, transform.up);
-                Vector3 ray = rotation * transform.forward;
-                Debug.DrawLine(transform.position, transform.position + ray * 30, Color.red);
-                if (Physics.Raycast(transform.position, ray, out hit, 30))
+                
+                Debug.DrawLine(transform.position, transform.position, Color.red);
+                if (Physics.Raycast(transform.position, transform.forward, out hit, 30))
                 {
-
                     float vectorDistance = Vector3.SqrMagnitude(hit.point - transform.position);
                     if (vectorDistance > visibilty_range)
                     { // find angle at which the distance was furtherest
@@ -52,7 +50,6 @@ public class SquaddieSight : MonoBehaviour {
                     }
                 }
             }
-            transform.Rotate(0f, angle, 0f);
         }
     }
 
@@ -86,4 +83,4 @@ public class SquaddieSight : MonoBehaviour {
 
 }
 
-}
+

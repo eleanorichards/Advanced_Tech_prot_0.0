@@ -5,24 +5,30 @@ using UnityEngine;
 public class SquadMovement : MonoBehaviour
 {
 
-    private GameObject[] enemies;
+    private GameObject[] enemies = new GameObject[100];
+    private GameObject[] allies = new GameObject[100];
+    private GameObject[] cover_zones = new GameObject[100];
+    //private Collider[] hitColliders;
+    private List<Collider> hitColliders = new List<Collider>(100);
+
+    //private List<GameObject> enemies;
     private GameObject closest_enemy;
-    private GameObject[] cover_zones;
     private GameObject closest_cover;
-    private GameObject[] squaddies = null;
 
     private float distance = Mathf.Infinity;
-    private float rotation_speed = 10.0f;
+
+    private int ally_num = 0;
+    private int enemy_num = 0;
+    private int cover_num = 0;
+
     private bool in_cover = false;
     private bool is_leader = false;
     private bool following_leader = false;
 
     private string statename = "";
-    private int zone_taken = -1;
-    private int enemy_num = 0;
     public float search_radius = 10.0f;
     public float bump_radius = 1.0f;
-    public float immediate_range = 15.0f;
+    public float immediate_range = 5.0f;
 
     UnityEngine.AI.NavMeshAgent agent;
 
@@ -30,16 +36,17 @@ public class SquadMovement : MonoBehaviour
     void Start()
     {
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-        cover_zones = GameObject.FindGameObjectsWithTag("Cover");
+        //cover_zones = GameObject.FindGameObjectsWithTag("Cover");
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        if(following_leader)
+        InvokeRepeating("UpdateColCheck", 0.0f, 1.0f);
+
+        if (following_leader)
         {
             FollowLeader();
-            Debug.Log("following");
         }
         if(!following_leader || is_leader)
         {
@@ -82,25 +89,23 @@ public class SquadMovement : MonoBehaviour
         }
         else
         {
-
+            Debug.Log("In Cover");
         }
     }
 
 
     void FollowLeader()
     {
-        GameObject[] targets = GameObject.FindGameObjectsWithTag("Ally");
-
-        for (int i = 0; i < targets.Length; i++)
+        for (int i = 0; i < allies.Length; i++)
         {
-            if (targets[i].GetComponent<SquadMovement>().GetLeader() && targets[i] != this.gameObject)
+            if (allies[i].GetComponent<SquadMovement>().GetLeader() && allies[i] != this.gameObject)
             {
-                Vector3 distance = targets[i].transform.position - transform.position;
+                Vector3 distance = allies[i].transform.position - transform.position;
                 float curDistance = distance.sqrMagnitude;
                 if (curDistance > bump_radius)
                 {
                     Debug.Log(curDistance);
-                    agent.SetDestination(targets[i].transform.position);
+                    agent.SetDestination(allies[i].transform.position);
                 }
             }
 
@@ -110,33 +115,31 @@ public class SquadMovement : MonoBehaviour
     void AttackEnemies()
     {
         FindNearestEnemy();
-        Debug.Log("Getting Enemies");
     }
 
 
-    void FindNearestEnemy()
-    {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, immediate_range);
-        for (int i = 0; i < hitColliders.Length; i++)
-        {
-            if (hitColliders[i].tag == "Enemy")
-            {
-                enemy_num++;
-                enemies[enemy_num] = hitColliders[i].gameObject;
-            }
-
-        }
+    Vector3 FindNearestEnemy()
+    { 
         for (int i = 0; i < enemy_num; i++)
         {
-            Debug.Log("searching" + enemy_num);
-            Vector3 diff = enemies[i].transform.position - transform.position;
-            float curDistance = diff.sqrMagnitude;
-            if (curDistance < distance)
+            if(enemies[i])
             {
-                closest_enemy = enemies[i];
-                distance = curDistance;
-                agent.SetDestination(closest_enemy.transform.position);
+                Vector3 diff = enemies[i].transform.position - transform.position;
+                float curDistance = diff.sqrMagnitude;
+                if (curDistance < distance)
+                {
+                    closest_enemy = enemies[i];
+                    distance = curDistance;
+                }
             }
+        }
+        if(closest_enemy)
+        {
+            return closest_enemy.transform.position;
+        }
+        else
+        {
+            return Vector3.zero;
         }
         
     }
@@ -144,31 +147,50 @@ public class SquadMovement : MonoBehaviour
 
     Vector3 FindNearestCover()
     {
-        for (int i = 0; i < cover_zones.Length; i++)
+        Vector3 closest_enemy_loc = Vector3.zero;
+
+        if (FindNearestEnemy() != Vector3.zero) 
         {
-            Vector3 diff = cover_zones[i].transform.position - transform.position;
-            float curDistance = diff.sqrMagnitude;
-            if (curDistance < distance && i != zone_taken)
-            {
-                closest_cover = cover_zones[i];
-                distance = curDistance;
-                zone_taken = i;
-            }
+            closest_enemy_loc = FindNearestEnemy();
         }
-        return closest_cover.transform.position;
+
+        for (int i = 0; i < cover_zones.Length; i++)
+        {            
+            if(cover_zones[i])
+            {
+
+                Debug.Log("Found available Cover");
+                Vector3 diff = cover_zones[i].transform.position - transform.position;
+                float curDistance = diff.sqrMagnitude;
+                if (curDistance < distance)
+                {
+                    closest_cover = cover_zones[i];
+                    distance = curDistance;
+                }
+            }
+            //if (!Physics.Raycast(cover_zones[i].transform.position, closest_enemy_loc, 30.0f))
+            //{
+            //}
+        }
+        
+        if(closest_cover)
+        {
+            return closest_cover.transform.position;
+        }
+        else
+        { return transform.position; }
     }
 
 
     public void SetLeader(bool setLeader)
     {
-        squaddies = GameObject.FindGameObjectsWithTag("Ally");
-        for (int i = 0; i < squaddies.Length; i++)
+        for (int i = 0; i < allies.Length; i++)
         {
-            if (squaddies[i] != this.gameObject)
+            if (allies[i] != this.gameObject)
             {
-                if (squaddies[i].gameObject.GetComponent<SquadMovement>().GetLeader())
+                if (allies[i].gameObject.GetComponent<SquadMovement>().GetLeader())
                 {
-                    squaddies[i].gameObject.GetComponent<SquadMovement>().SetLeader(false);
+                    allies[i].gameObject.GetComponent<SquadMovement>().SetLeader(false);
                 }
             }
         }
@@ -208,5 +230,52 @@ public class SquadMovement : MonoBehaviour
             //enemy damage script
             Destroy(col.gameObject);
         }
+    }
+
+
+    void UpdateColCheck()
+    {        
+        //yield return new WaitForSeconds(1);
+
+        foreach (Collider hitCollider in Physics.OverlapSphere(transform.position, immediate_range))
+        {
+            if (hitColliders.Count != 0)
+            {
+                if (!hitColliders.Contains(hitCollider))
+                {
+                    hitColliders.Add(hitCollider);
+                }
+            }
+        }
+
+        enemy_num = 0;
+        ally_num = 0;
+        cover_num = 0;
+
+        int i = 0;
+        foreach(Collider hitCollider in hitColliders)
+        {
+            if (hitCollider.gameObject.CompareTag("Enemy"))
+            {
+                Debug.Log("Enemy " + i + " Added");
+                enemies[enemy_num] = hitColliders[i].gameObject;
+                enemy_num++;
+            }
+            else if(hitCollider.gameObject.CompareTag("Ally"))
+            {
+                Debug.Log("Enemy " + i + " Added");
+                allies[ally_num] = hitColliders[i].gameObject;
+                ally_num++;
+            }
+            else if(hitCollider.gameObject.CompareTag("Cover"))
+            {
+                Debug.Log("Cover " + i + " Added");
+
+                cover_zones[cover_num] = hitCollider.gameObject;
+                cover_num++;
+            }
+            i++;
+        }
+        Debug.Log("done");
     }
 }
