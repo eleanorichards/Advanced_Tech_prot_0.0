@@ -39,9 +39,9 @@ public class Detection : MonoBehaviour
 
         foreach(GameObject cover in cover_points)
         {
-            if(cover.GetComponent<CoverChecker>().isActive())
+            if(!cover.GetComponent<CoverChecker>().isActive())
             {
-                cover.SetActive(false);
+                //cover.SetActive(false);
             }
         }
     }
@@ -122,13 +122,11 @@ public class Detection : MonoBehaviour
 
             }
         }
-        //return closest_enemy
     }
 
 
     private void FindNearestCover()
     {
-        //List version
         foreach (GameObject cover in cover_points)
         {
             if (cover)
@@ -168,12 +166,14 @@ public class Detection : MonoBehaviour
             Vector3 direction = (cover_point.transform.position - closest_enemy.transform.position).normalized;
             Ray ray = new Ray(cover_point.transform.position, direction);
             Debug.DrawRay(cover_point.transform.position, direction, Color.red);
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit, 30.0f))
             {
                 return true;
             }
             else
             {
+
+                print("returning false");
                 return false;
             }
         }

@@ -51,8 +51,7 @@ public class SquadMovement : MonoBehaviour
             FollowLeader();
         }
         if(!following_leader || is_leader)
-        {
-                   
+        {                  
             if (statename == "Attack")
             {
                 AttackEnemies();
