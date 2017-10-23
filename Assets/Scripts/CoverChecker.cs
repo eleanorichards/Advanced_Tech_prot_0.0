@@ -19,7 +19,6 @@ public class CoverChecker : MonoBehaviour {
         //coverPoint = transform.Find("Quad").gameObject;
         position = transform.position;
         enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
         //coverManager = GetComponentInParent<CoverManager>();
     }
 
@@ -34,65 +33,33 @@ public class CoverChecker : MonoBehaviour {
 	}
 
 
-    void CheckCoverAvailability()
-    {
-        
-    }
-
-
-    void CheckEnemyProximity()
+    public bool CoverAvailable(Vector3 enemyPos)
     {
 
-        for (int i = 0; i < enemies.Length; i++)
+        RaycastHit hit;
+        Vector3 direction = (transform.position - enemyPos).normalized;
+        Ray ray = new Ray(transform.position, direction);
+        Debug.DrawRay(transform.position, direction, Color.red);
+        Debug.Log("logged");
+        if (Physics.Raycast(ray, out hit))
         {
-            Vector3 diff = enemies[i].transform.position - position;
-            curDistance = diff.sqrMagnitude;
-            if (curDistance < distance)
-            {
-                closest_enemy = enemies[i];
-                distance = curDistance;
-            }
-            Debug.Log(curDistance);
-            setWarningZone(distance);
+            return true;
+        }
+        else
+        {
+            return false;
         }
 
     }
 
 
-    void setWarningZone(float enemyRange)
-    {
-        //if(enemyRange <= 10.0f)
-        //{
-        //    Debug.Log("Enemy Close");
-        //    obj_renderer.material.color = Color.red;
-        //}
-        //else if (enemyRange <= 20.0f)
-        //{
-        //    Debug.Log("Enemy Closish");
-
-        //    obj_renderer.material.color = Color.yellow;
-        //}
-        //else if (enemyRange <= 30.0f)
-        //{
-        //    Debug.Log("Enemy Far");
-
-        //    obj_renderer.material.color = Color.green;
-        //}
-    }
-
-
-    void OnTriggerEnter(Collider col)
+    void OnTriggerStay(Collider col)
     {
         active = false;
     }
 
-    void OnTriggerExit(Collider col)
-    {
-        active = true;
-    }
-
-
-    public bool pointActive()
+    
+    public bool isActive()
     {
         return active;
     }
