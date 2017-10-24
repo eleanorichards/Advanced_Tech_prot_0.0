@@ -5,33 +5,24 @@ using UnityEngine;
 public class SquadMovement : MonoBehaviour
 {
 
-    private GameObject[] enemies = new GameObject[100];
     private GameObject[] allies = new GameObject[100];
-    private GameObject[] cover_zones = new GameObject[100];
+    private GameObject closest_enemy = null;
+    private GameObject closest_cover = null;
 
-    //private Collider[] hitColliders;
     private List<Collider> hitColliders = new List<Collider>(200);
 
-    //private List<GameObject> enemies;
-    private GameObject closest_enemy;
-    private GameObject closest_cover;
-
     private float distance = Mathf.Infinity;
-
-    private int ally_num = 0;
-    private int enemy_num = 0;
-    private int cover_num = 0;
 
     private bool in_cover = false;
     private bool is_leader = false;
     private bool following_leader = false;
-
     private string statename = "";
-    public float search_radius = 10.0f;
+
     public float bump_radius = 1.0f;
     public float immediate_range = 5.0f;
 
     UnityEngine.AI.NavMeshAgent agent;
+
     private Detection detection;
 
 
@@ -58,6 +49,10 @@ public class SquadMovement : MonoBehaviour
             }
         }
 
+		if (statename == "Find Cover")
+		{            
+			RunToCover();
+		}
 
     }
 
@@ -75,10 +70,6 @@ public class SquadMovement : MonoBehaviour
             {
                 following_leader = true;
             }
-        }
-        if (statename == "Find Cover")
-        {
-            RunToCover();
         }
     }
 
