@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UI : MonoBehaviour {
+public class CanvasScript : MonoBehaviour {
 
-    public GameObject Canvas;
 
     public Text centreDisplay;
-    private GameObject[] Squad;
-
-	// Use this for initialization
-	void Start () {
+    public Image crosshair;
+    private GameObject[] Squad = new GameObject[100];
+    private string view_state = "";
+    
+    // Use this for initialization
+    void Start () {
         //INVESTIGATION font
         //FindCover = GameObject.Find("FindCover");
         centreDisplay.enabled = false;
-
     }
 
     // Update is called once per frame
@@ -38,6 +38,7 @@ public class UI : MonoBehaviour {
         }
     }
 
+
     IEnumerator ShowMessage(string message, float delay)
     {
         centreDisplay.text = message;
@@ -46,12 +47,35 @@ public class UI : MonoBehaviour {
         centreDisplay.enabled = false;
 
     }
+
+
     void SendMessageToSquad(string message)
     {
         Squad = GameObject.FindGameObjectsWithTag("Ally");
         for(int i = 0; i < Squad.Length; i++)
         {
             Squad[i].GetComponent<SquadMovement>().ActivateState(message);
+        }
+    }
+
+
+    public void SetCrosshairState(string _state)
+    {
+        view_state = _state;
+        if(view_state == "Default")
+        {
+            Debug.Log("defaulting");
+            crosshair.color = Color.green;
+        }
+        else if (view_state == "Ally")
+        {
+            Debug.Log("ally in view");
+            crosshair.color = Color.blue;
+        }
+        else if (view_state == "Enemy")
+        {
+            Debug.Log("ally in view");
+            crosshair.color = Color.red;
         }
     }
 }

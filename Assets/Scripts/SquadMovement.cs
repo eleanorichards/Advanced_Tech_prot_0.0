@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class SquadMovement : MonoBehaviour
 {
-
     private GameObject[] allies = new GameObject[100];
     private GameObject closest_enemy = null;
     private GameObject closest_cover = null;
