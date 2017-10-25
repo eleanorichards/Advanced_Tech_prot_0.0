@@ -7,7 +7,7 @@ public class BasicShoot : MonoBehaviour {
     public GameObject bullet;
     public GameObject gun;
 
-    private float force_magnitude = 5.0f;
+    public float force_magnitude = 10.0f;
     private float view_distance = 50.0f;
     private string prev_statename = "Default";
 
@@ -33,7 +33,7 @@ public class BasicShoot : MonoBehaviour {
             if(hit.collider.gameObject.tag == "Ally")
             {
                 SwitchCrosshairState("Ally");
-                if (Input.GetKey(KeyCode.Q))
+                if (Input.GetButtonDown("Fire1")) 
                 {
                     rend = hit.collider.gameObject.GetComponent<Renderer>();
                     rend.material.color = Color.red;

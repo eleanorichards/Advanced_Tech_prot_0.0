@@ -36,6 +36,16 @@ public class CanvasScript : MonoBehaviour {
             StartCoroutine(ShowMessage("Attack!", 1.0f));
             SendMessageToSquad("Attack");
         }
+        else if (Input.GetKeyDown(KeyCode.F4))
+        {
+            StartCoroutine(ShowMessage("Form Line!", 1.0f));
+            SendMessageToSquad("Form Line");
+        }
+        else if (Input.GetKeyDown(KeyCode.F5))
+        {
+            StartCoroutine(ShowMessage("Form V!", 1.0f));
+            SendMessageToSquad("Form V");
+        }
     }
 
 

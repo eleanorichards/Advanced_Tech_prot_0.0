@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class SquadMovement : MonoBehaviour
 {
-    private GameObject[] allies = new GameObject[100];
     private GameObject closest_enemy = null;
     private GameObject closest_cover = null;
 
     private List<Collider> hitColliders = new List<Collider>(200);
-
+    private List<GameObject> allies = new List<GameObject>(100);
     private float distance = Mathf.Infinity;
 
     private bool in_cover = false;
@@ -88,16 +87,17 @@ public class SquadMovement : MonoBehaviour
 
     void FollowLeader()
     {
-        for (int i = 0; i < allies.Length; i++)
+        GetAlliesInRange();
+        foreach (GameObject ally in allies)
         {
-            if (allies[i].GetComponent<SquadMovement>().GetLeader() && allies[i] != this.gameObject)
+            if (ally.GetComponent<SquadMovement>().GetLeader() && ally != this.gameObject)
             {
-                Vector3 distance = allies[i].transform.position - transform.position;
+                Vector3 distance = ally.transform.position - transform.position;
                 float curDistance = distance.sqrMagnitude;
                 if (curDistance > bump_radius)
                 {
                     Debug.Log(curDistance);
-                    agent.SetDestination(allies[i].transform.position);
+                    agent.SetDestination(ally.transform.position);
                 }
             }
 
@@ -114,15 +114,23 @@ public class SquadMovement : MonoBehaviour
     }
 
 
+    void MoveTargetToPosition(Vector3 destination)
+    {
+        
+        agent.SetDestination(destination);
+    }
+
+
     public void SetLeader(bool setLeader)
     {
-        for (int i = 0; i < allies.Length; i++)
+        GetAlliesInRange();
+        foreach (GameObject ally in allies)
         {
-            if (allies[i] != this.gameObject)
+            if (ally != this.gameObject)
             {
-                if (allies[i].gameObject.GetComponent<SquadMovement>().GetLeader())
+                if (ally.GetComponent<SquadMovement>().GetLeader())
                 {
-                    allies[i].gameObject.GetComponent<SquadMovement>().SetLeader(false);
+                    ally.GetComponent<SquadMovement>().SetLeader(false);
                 }
             }
         }
@@ -158,7 +166,16 @@ public class SquadMovement : MonoBehaviour
         {
             in_cover = false;
         }
+    }
 
+
+    void GetAlliesInRange()
+    {
+        allies = detection.allies;
+        if(allies.Count <= 0)
+        {
+            print("No allies in range");
+        }
     }
 
 

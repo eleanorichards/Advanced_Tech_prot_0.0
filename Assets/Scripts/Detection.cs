@@ -86,33 +86,31 @@ public class Detection : MonoBehaviour
 
     private bool CoverCanSeeEnemy(GameObject cover_point)
     {
-        if(!closest_enemy)
-        {
-            FindNearestEnemy();
-        }
-       
+        bool return_value = true;
         //raycast between cover and closest enemy to player        
-        if (cover_point && closest_enemy)
+        if (cover_point)
         {
-            RaycastHit hit;
-            Vector3 direction = (cover_point.transform.position - closest_enemy.transform.position).normalized;
-            Ray ray = new Ray(cover_point.transform.position, direction);
-            Debug.DrawRay(cover_point.transform.position, direction, Color.red);
-            if (Physics.Raycast(ray, out hit, cover_mask))
+            foreach(GameObject enemy in enemies)
             {
-                return true;
-            }
-            else
-            {
-                return false;
+                RaycastHit hit;
+                Vector3 direction = (cover_point.transform.position - enemy.transform.position).normalized;
+                Ray ray = new Ray(cover_point.transform.position, direction);
+                Debug.DrawRay(cover_point.transform.position, direction, Color.red);
+                if (Physics.Raycast(ray, out hit, cover_mask))
+                {
+                    return_value =  true;
+                }
+                else
+                {
+                    return_value = false;
+                }
             }
         }
         else
         {
-            return false;
+            return_value = false;
         }
-        
-
+        return return_value;
     }
 
     public Vector3 ClosestEnemyTransform()
