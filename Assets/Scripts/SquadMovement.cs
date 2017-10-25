@@ -16,7 +16,7 @@ public class SquadMovement : MonoBehaviour
     private bool following_leader = false;
     private string statename = "";
 
-    public float bump_radius = 1.0f;
+    public float bump_radius = 5.0f;
     public float immediate_range = 5.0f;
 
     UnityEngine.AI.NavMeshAgent agent;
@@ -46,12 +46,18 @@ public class SquadMovement : MonoBehaviour
                 AttackEnemies();
             }
         }
-
 		if (statename == "Find Cover")
 		{            
 			RunToCover();
 		}
-
+        if (statename == "Find Cover")
+        {
+            RunToCover();
+        }
+        if (statename == "Find Cover")
+        {
+            RunToCover();
+        }
     }
 
     public void ActivateState(string _statename)
@@ -96,7 +102,6 @@ public class SquadMovement : MonoBehaviour
                 float curDistance = distance.sqrMagnitude;
                 if (curDistance > bump_radius)
                 {
-                    Debug.Log(curDistance);
                     agent.SetDestination(ally.transform.position);
                 }
             }
@@ -104,19 +109,40 @@ public class SquadMovement : MonoBehaviour
         }
     }
 
+
+    void FormVShape()
+    {
+        GetAlliesInRange();
+    }
+
+
+    void FormLine()
+    {
+        GetAlliesInRange();
+        foreach (GameObject ally in allies)
+        {
+            if (is_leader)
+            {
+                //Vector3 temp_loc = transform.position;
+            }
+            else
+            {
+               // Vector3 offset = temp_loc + i * multiplier;
+               //i++
+            }
+        }
+    }
+
+
     void AttackEnemies()
     {
-        Vector3 temp_loc;
-        temp_loc = detection.ClosestEnemyTransform();
-        Debug.Log(temp_loc);
-        agent.SetDestination(temp_loc);
-
+        agent.SetDestination(detection.ClosestEnemyTransform());
     }
 
 
     void MoveTargetToPosition(Vector3 destination)
     {
-        
+        print("set destination " + destination);
         agent.SetDestination(destination);
     }
 
