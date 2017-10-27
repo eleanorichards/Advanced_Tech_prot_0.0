@@ -22,14 +22,13 @@ public class PlayerMovement : MonoBehaviour {
     private float playerHeight;
 
     public int sensitivity = 5;
+
     // Use this for initialization
     void Start () {
         ground = LayerMask.GetMask("Ground");
         rig = GetComponent<Rigidbody>();
-        //rig.freezeRotation = true;
         rig.useGravity = false;
         playerHeight = GetComponent<Collider>().bounds.size.y;
-        //Debug.Log(playerHeight);
     }
    
 

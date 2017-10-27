@@ -7,44 +7,54 @@ public class CanvasScript : MonoBehaviour {
 
 
     public Text centreDisplay;
+    public Image HUD;
     public Image crosshair;
     private GameObject[] Squad = new GameObject[100];
     private string view_state = "";
-    
+
+
     // Use this for initialization
     void Start () {
         //INVESTIGATION font
-        //FindCover = GameObject.Find("FindCover");
         centreDisplay.enabled = false;
+        HUD.enabled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        
+        if(Input.GetKeyDown(KeyCode.Q))
+        {
+            displayHUD();
+        }
+        
         if (Input.GetKeyDown(KeyCode.F1))
         {
+            StateMachine.Instance.memberState = MemberState.FollowLeader;
             StartCoroutine(ShowMessage("Follow Leader!", 1.0f));
-            SendMessageToSquad("Follow Leader");
         }
         else if (Input.GetKeyDown(KeyCode.F2))
         {
+            StateMachine.Instance.memberState = MemberState.FindCover;
             StartCoroutine(ShowMessage("Find Cover!", 1.0f));
-            SendMessageToSquad("Find Cover");
         }
         else if (Input.GetKeyDown(KeyCode.F3))
         {
+            StateMachine.Instance.memberState = MemberState.Attack;
             StartCoroutine(ShowMessage("Attack!", 1.0f));
-            SendMessageToSquad("Attack");
         }
         else if (Input.GetKeyDown(KeyCode.F4))
         {
             StartCoroutine(ShowMessage("Form Line!", 1.0f));
-            SendMessageToSquad("Form Line");
         }
         else if (Input.GetKeyDown(KeyCode.F5))
         {
             StartCoroutine(ShowMessage("Form V!", 1.0f));
-            SendMessageToSquad("Form V");
+        }
+        else if (Input.GetKeyDown(KeyCode.F5))
+        {
+            StartCoroutine(ShowMessage("Follow Player!", 1.0f));
         }
     }
 
@@ -59,33 +69,31 @@ public class CanvasScript : MonoBehaviour {
     }
 
 
-    void SendMessageToSquad(string message)
+    public void SetCrosshairState()
     {
-        Squad = GameObject.FindGameObjectsWithTag("Ally");
-        for(int i = 0; i < Squad.Length; i++)
+        switch (StateMachine.Instance.viewState)
         {
-            Squad[i].GetComponent<SquadMovement>().ActivateState(message);
+            case ViewState.Ally:
+                
+                crosshair.color = Color.blue;
+                break;
+            case ViewState.Enemy:
+                crosshair.color = Color.red;
+                break;
+            case ViewState.Default:
+                crosshair.color = Color.green;
+                break;
         }
     }
 
-
-    public void SetCrosshairState(string _state)
+    void displayHUD()
     {
-        view_state = _state;
-        if(view_state == "Default")
+        if (StateMachine.Instance.viewState == ViewState.Ally)
         {
-            Debug.Log("defaulting");
-            crosshair.color = Color.green;
-        }
-        else if (view_state == "Ally")
-        {
-            Debug.Log("ally in view");
-            crosshair.color = Color.blue;
-        }
-        else if (view_state == "Enemy")
-        {
-            Debug.Log("ally in view");
-            crosshair.color = Color.red;
+            crosshair.enabled = false;
+            HUD.enabled = true;
+            HUD.color = new Vector4(150,250,250,1);
+            
         }
     }
 }

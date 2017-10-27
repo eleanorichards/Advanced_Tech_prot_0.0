@@ -14,34 +14,25 @@ public class Detection : MonoBehaviour
 
     private GameObject closest_enemy = null;
     private GameObject closest_cover = null;
-	private Vector3 targetPos;
     private LayerMask cover_mask = 9;
     private float temp_distance = Mathf.Infinity;
-    
-
+    private bool is_leader = false;
+    private Vector3 target_pos = Vector3.zero;
+    private GameObject leader = null;
     // Use this for initialization
     void Start()
     {
-
-		targetPos = Vector3.zero;
-
         foreach(GameObject cover in cover_points)
         {
             if(!cover.GetComponent<CoverChecker>().isActive())
             {
-                //cover.SetActive(false);
+                cover.SetActive(false);
+                print("set inactive: " + cover);
             }
         }
     }
 
-
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        
-    }
-
-
+    //ENEMY START
     private void FindNearestEnemy()
     {     
         foreach (GameObject enemy in enemies)
@@ -54,13 +45,81 @@ public class Detection : MonoBehaviour
                 {
                     closest_enemy = enemy;
                     temp_distance = curDistance;
+                    
                 }
 
             }
         }
     }
+    //ENEMY END
 
 
+    //LEADER START
+    private void FindLeader(/*GameObject selected*/)
+    {
+        foreach (GameObject ally in allies)
+        {
+            if (ally.GetComponentInChildren<Detection>().IsLeader())
+            {
+                leader = ally;
+            }
+            else
+                return;
+        }
+    }
+
+    public void FollowLeader()
+    {
+        if(leader == null)
+        {
+            FindLeader();
+        }
+        else
+        {
+            foreach (GameObject ally in allies)
+            {
+                Vector3 distance = leader.transform.position - transform.position;
+                float curDistance = distance.sqrMagnitude;
+                Debug.Log(curDistance);
+                //if (curDistance > bump_radius)
+                //{
+                target_pos = leader.transform.position;
+                //}
+
+            }
+
+        }
+    }
+
+    public void SetLeader(bool setLeader)
+    {        
+        foreach (GameObject ally in allies)
+        {
+            if (ally != this.gameObject)
+            {
+                if (ally.GetComponentInChildren<Detection>().IsLeader())
+                {
+                    ally.GetComponent<Detection>().SetLeader(false);
+                }
+            }
+        }
+        is_leader = setLeader;
+        Debug.Log("set a leader");
+    }
+
+    public bool IsLeader()
+    {
+        return is_leader;
+    }
+
+
+    public Vector3 LeaderPosition()
+    {
+        return target_pos;
+    }
+    //LEADER END
+
+    //COVER START
 	void FindNearestCover()
     {
 		Vector3 closest_transform = transform.position;
@@ -76,7 +135,7 @@ public class Detection : MonoBehaviour
                     {
                         closest_cover = cover;
                         temp_distance = curDistance;
-						targetPos = closest_cover.transform.position;
+						target_pos = closest_cover.transform.position;
                     }
                 }
             }
@@ -86,6 +145,10 @@ public class Detection : MonoBehaviour
 
     private bool CoverCanSeeEnemy(GameObject cover_point)
     {
+        if(!closest_enemy)
+        {
+            FindNearestEnemy();
+        }
         bool return_value = true;
         //raycast between cover and closest enemy to player        
         if (cover_point)
@@ -93,7 +156,7 @@ public class Detection : MonoBehaviour
             foreach(GameObject enemy in enemies)
             {
                 RaycastHit hit;
-                Vector3 direction = (cover_point.transform.position - enemy.transform.position).normalized;
+                Vector3 direction = (cover_point.transform.position - closest_enemy.transform.position).normalized;
                 Ray ray = new Ray(cover_point.transform.position, direction);
                 Debug.DrawRay(cover_point.transform.position, direction, Color.red);
                 if (Physics.Raycast(ray, out hit, cover_mask))
@@ -113,6 +176,21 @@ public class Detection : MonoBehaviour
         return return_value;
     }
 
+	public Vector3 ClosestCoverTransform()
+	{
+		FindNearestCover ();
+		if (target_pos != Vector3.zero)
+        {
+			return target_pos;
+		}
+        else
+        {
+			return transform.position;
+		}
+	}
+    //COVER END
+
+
     public Vector3 ClosestEnemyTransform()
     {
         FindNearestEnemy();
@@ -127,18 +205,27 @@ public class Detection : MonoBehaviour
         }
     }
 
+    //FORM LINE START
+    void FormLine()
+    {
+        foreach (GameObject ally in allies)
+        {
+            if (is_leader)
+            {
+                return;
+            }
+            else if(ally.GetComponent<Detection>().IsLeader())
+            {
+               // ally.transform
+               // Vector3 offset = temp_loc + i * multiplier;
+                //i++
+            }
+        }
+    }
+    //FORM LINE END
 
-	public Vector3 ClosestCoverTransform()
-	{
-		FindNearestCover ();
-		if (targetPos != Vector3.zero) {
-			return targetPos;
-		} else {
-			return transform.position;
-		}
-	}
 
-
+        //ADDITIONS
     void OnTriggerEnter(Collider col)
     {
         //Enemy addition
@@ -158,32 +245,33 @@ public class Detection : MonoBehaviour
         }
     }
 
-//REMOVALS
-void OnTriggerExit(Collider col)
-{
-    //Enemy remove
-    if (col.gameObject.CompareTag("Enemy"))
+
+    //REMOVALS
+    void OnTriggerExit(Collider col)
     {
-        for (int i = enemies.Count - 1; i >= 0; i--)
+        //Enemy remove
+        if (col.gameObject.CompareTag("Enemy"))
         {
-            enemies.RemoveAt(i);
+            for (int i = enemies.Count - 1; i >= 0; i--)
+            {
+                enemies.RemoveAt(i);               
+            }
+        }
+        //Ally remove
+        if (col.gameObject.CompareTag("Ally"))
+        {
+            for (int i = allies.Count - 1; i >= 0; i--)
+            {
+                allies.RemoveAt(i);
+            }
+        }
+        //cover remove
+        if (col.gameObject.CompareTag("Cover"))
+        {
+            for (int i = cover_points.Count - 1; i >= 0; i--)
+            {
+                cover_points.RemoveAt(i);
+            }
         }
     }
-    //Ally remove
-    if (col.gameObject.CompareTag("Ally"))
-    {
-        for (int i = allies.Count - 1; i >= 0; i--)
-        {
-            allies.RemoveAt(i);
-        }
-    }
-    //cover remove
-    if (col.gameObject.CompareTag("Cover"))
-    {
-        for (int i = cover_points.Count - 1; i >= 0; i--)
-        {
-            cover_points.RemoveAt(i);
-        }
-    }
-}
 }

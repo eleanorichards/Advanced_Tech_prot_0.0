@@ -12,7 +12,6 @@ public class SquadMovement : MonoBehaviour
     private float distance = Mathf.Infinity;
 
     private bool in_cover = false;
-    private bool is_leader = false;
     private bool following_leader = false;
     private string statename = "";
 
@@ -24,56 +23,42 @@ public class SquadMovement : MonoBehaviour
     private Detection detection;
 
 
+
+
     // Use this for initialization
     void Start()
     {
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         detection = GetComponentInChildren<Detection>();
-
+        
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (following_leader)
+        switch(StateMachine.Instance.memberState)
         {
-            FollowLeader();
-        }
-        if(!following_leader || is_leader)
-        {                  
-            if (statename == "Attack")
-            {
+            case MemberState.FollowLeader:
+                FollowLeader();
+                break;
+            case MemberState.FindCover:
+                RunToCover();
+                break;
+            case MemberState.Attack:
                 AttackEnemies();
-            }
-        }
-		if (statename == "Find Cover")
-		{            
-			RunToCover();
-		}
-        if (statename == "Find Cover")
-        {
-            RunToCover();
-        }
-        if (statename == "Find Cover")
-        {
-            RunToCover();
-        }
-    }
-
-    public void ActivateState(string _statename)
-    {
-        statename = _statename;
-
-        if (statename == "Follow Leader")
-        {
-            if(following_leader)
-            {
-                following_leader = false;
-            }
-            else if(!following_leader)
-            {
-                following_leader = true;
-            }
+                break;
+            case MemberState.FollowMe:
+                FollowPlayer();
+                break;
+            case MemberState.FormLine:
+                FormLine();
+                break;
+            case MemberState.FormV:
+                FormV();
+                break;
+            default:
+                RunToCover();
+                break;
         }
     }
 
@@ -93,46 +78,30 @@ public class SquadMovement : MonoBehaviour
 
     void FollowLeader()
     {
-        GetAlliesInRange();
-        foreach (GameObject ally in allies)
-        {
-            if (ally.GetComponent<SquadMovement>().GetLeader() && ally != this.gameObject)
-            {
-                Vector3 distance = ally.transform.position - transform.position;
-                float curDistance = distance.sqrMagnitude;
-                if (curDistance > bump_radius)
-                {
-                    agent.SetDestination(ally.transform.position);
-                }
-            }
+        detection.FollowLeader();        
+    }
 
-        }
+
+    void FormV()
+    {
+        
     }
 
 
     void FormVShape()
     {
-        GetAlliesInRange();
     }
 
 
     void FormLine()
     {
-        GetAlliesInRange();
-        foreach (GameObject ally in allies)
-        {
-            if (is_leader)
-            {
-                //Vector3 temp_loc = transform.position;
-            }
-            else
-            {
-               // Vector3 offset = temp_loc + i * multiplier;
-               //i++
-            }
-        }
+       
     }
 
+    void FollowPlayer()
+    {
+
+    }
 
     void AttackEnemies()
     {
@@ -140,45 +109,18 @@ public class SquadMovement : MonoBehaviour
     }
 
 
-    void MoveTargetToPosition(Vector3 destination)
-    {
-        print("set destination " + destination);
-        agent.SetDestination(destination);
-    }
 
-
-    public void SetLeader(bool setLeader)
-    {
-        GetAlliesInRange();
-        foreach (GameObject ally in allies)
-        {
-            if (ally != this.gameObject)
-            {
-                if (ally.GetComponent<SquadMovement>().GetLeader())
-                {
-                    ally.GetComponent<SquadMovement>().SetLeader(false);
-                }
-            }
-        }
-        is_leader = setLeader;
-        Debug.Log("set a leader");
-    }
-
-
-    public bool GetLeader()
-    {
-        return is_leader;
-    }
+    
 
 
     void OnCollisionEnter(Collision col)
     {
-        if (col.gameObject.tag == "Enemy")
+        if (col.gameObject.CompareTag("Enemy"))
         {
             //enemy damage script
             Destroy(col.gameObject);
         }
-        if (col.gameObject.tag == "Cover")
+        if (col.gameObject.CompareTag("Cover"))
         {
             in_cover = true;
         }
@@ -188,21 +130,9 @@ public class SquadMovement : MonoBehaviour
 
     void OnCollisionExit(Collision col)
     {
-        if (col.gameObject.tag == "Cover")
+        if (col.gameObject.CompareTag("Cover"))
         {
             in_cover = false;
         }
     }
-
-
-    void GetAlliesInRange()
-    {
-        allies = detection.allies;
-        if(allies.Count <= 0)
-        {
-            print("No allies in range");
-        }
-    }
-
-
 }
