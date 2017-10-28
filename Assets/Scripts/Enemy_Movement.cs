@@ -4,16 +4,33 @@ using UnityEngine;
 
 public class Enemy_Movement : MonoBehaviour {
 
-    public Transform goal;
-
+    public Transform[] goals;
+    UnityEngine.AI.NavMeshAgent agent;
+    int i = 0;
     void Start()
     {
-        //UnityEngine.AI.NavMeshAgent agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-        //agent.destination = goal.position;
+        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
     }
 
     // Update is called once per frame
-    void Update () {
-		
-	}
+    void Update ()
+    {
+		if(transform.position == goals[i].position)
+        {
+            if(i < goals.Length)
+            {
+                i++;
+                agent.destination = goals[i].position;
+
+            }
+            else
+            {
+                i--;
+                agent.destination = goals[i].position;
+            }
+        }
+
+    }
+
+    
 }
