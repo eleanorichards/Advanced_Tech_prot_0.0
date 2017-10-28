@@ -7,55 +7,28 @@ public class CanvasScript : MonoBehaviour {
 
 
     public Text centreDisplay;
-    public Image HUD;
+    public GameObject HUD;
     public Image crosshair;
-    private GameObject[] Squad = new GameObject[100];
     private string view_state = "";
-
+    private GameObject player;
 
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
         //INVESTIGATION font
+        player = GameObject.Find("Player");
+        HUD.SetActive(false);
         centreDisplay.enabled = false;
-        HUD.enabled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-        if(Input.GetKeyDown(KeyCode.Q))
+        //Switch states depending on keycodes..
+        if(Input.GetKey(KeyCode.Q))
         {
             displayHUD();
-        }
-        
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            StateMachine.Instance.memberState = MemberState.FollowLeader;
-            StartCoroutine(ShowMessage("Follow Leader!", 1.0f));
-        }
-        else if (Input.GetKeyDown(KeyCode.F2))
-        {
-            StateMachine.Instance.memberState = MemberState.FindCover;
-            StartCoroutine(ShowMessage("Find Cover!", 1.0f));
-        }
-        else if (Input.GetKeyDown(KeyCode.F3))
-        {
-            StateMachine.Instance.memberState = MemberState.Attack;
-            StartCoroutine(ShowMessage("Attack!", 1.0f));
-        }
-        else if (Input.GetKeyDown(KeyCode.F4))
-        {
-            StartCoroutine(ShowMessage("Form Line!", 1.0f));
-        }
-        else if (Input.GetKeyDown(KeyCode.F5))
-        {
-            StartCoroutine(ShowMessage("Form V!", 1.0f));
-        }
-        else if (Input.GetKeyDown(KeyCode.F5))
-        {
-            StartCoroutine(ShowMessage("Follow Player!", 1.0f));
-        }
+        }    
     }
 
 
@@ -86,14 +59,24 @@ public class CanvasScript : MonoBehaviour {
         }
     }
 
+
     void displayHUD()
-    {
+    {        
         if (StateMachine.Instance.viewState == ViewState.Ally)
         {
+            player.GetComponent<PlayerMovement>().enabled = false;
+            player.GetComponent<BasicShoot>().enabled = false;
             crosshair.enabled = false;
-            HUD.enabled = true;
-            HUD.color = new Vector4(150,250,250,1);
-            
+            HUD.SetActive(true);          
         }
+    }
+
+
+    void CloseHud()
+    {
+        player.GetComponent<PlayerMovement>().enabled = true;
+        player.GetComponent<BasicShoot>().enabled = true;
+        crosshair.enabled = true;
+        HUD.SetActive(false);
     }
 }

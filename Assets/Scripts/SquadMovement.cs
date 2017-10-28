@@ -109,10 +109,6 @@ public class SquadMovement : MonoBehaviour
     }
 
 
-
-    
-
-
     void OnCollisionEnter(Collision col)
     {
         if (col.gameObject.CompareTag("Enemy"))
