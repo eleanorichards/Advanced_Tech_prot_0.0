@@ -8,10 +8,12 @@ public class HUDSelection : MonoBehaviour
 
     private GameObject player;
     public Image crosshair;
+    private GameObject ally_selected = null;
 
     // Use this for initialization
     void Start()
     {
+       // ally_selected.GetComponent<StateMachine>();
 
         player = GameObject.Find("Player");
     }
@@ -21,22 +23,23 @@ public class HUDSelection : MonoBehaviour
         switch (message)
         {
             case "Follow":
-                StateMachine.Instance.memberState = MemberState.FollowLeader;
+                ally_selected.GetComponentInChildren<Detection>().SetLeader(true);
+                ally_selected.GetComponent<StateMachine>().memberState = MemberState.FollowLeader;
                 break;
             case "Attack":
-                StateMachine.Instance.memberState = MemberState.Attack;
+                ally_selected.GetComponent<StateMachine>().memberState = MemberState.Attack;
                 break;
             case "Cover":
-                StateMachine.Instance.memberState = MemberState.FindCover;
+                ally_selected.GetComponent<StateMachine>().memberState = MemberState.FindCover;
                 break;
             case "Wedge":
-                StateMachine.Instance.memberState = MemberState.FormV;
+                ally_selected.GetComponent<StateMachine>().memberState = MemberState.FormV;
                 break;
             case "Line":
-                StateMachine.Instance.memberState = MemberState.FormLine;
+                ally_selected.GetComponent<StateMachine>().memberState = MemberState.FormLine;
                 break;
             case "Recall":
-                StateMachine.Instance.memberState = MemberState.FollowMe;
+                ally_selected.GetComponent<StateMachine>().memberState = MemberState.FollowMe;
                 break;
             case "Exit":
                 CloseHud();
@@ -46,6 +49,11 @@ public class HUDSelection : MonoBehaviour
 
     }
 
+    public void SetSelected(GameObject _ally)
+    {
+        ally_selected = _ally;
+    }
+
 
     void CloseHud()
     {
@@ -53,12 +61,5 @@ public class HUDSelection : MonoBehaviour
         player.GetComponent<PlayerMovement>().enabled = true;
         player.GetComponent<BasicShoot>().enabled = true;
         crosshair.enabled = true;
-    }
-
-
-    //when follow is pressed
-    public void Follow()
-    {
-        StateMachine.Instance.memberState = MemberState.FollowLeader;
     }
 }

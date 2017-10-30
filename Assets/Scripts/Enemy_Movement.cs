@@ -15,20 +15,21 @@ public class Enemy_Movement : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-		if(transform.position == goals[i].position)
-        {
-            if(i < goals.Length)
-            {
-                i++;
-                agent.destination = goals[i].position;
 
-            }
-            else
-            {
-                i--;
-                agent.destination = goals[i].position;
-            }
-        }
+		//if(transform.position == goals[i].position)
+  //      {
+  //          if(i < goals.Length)
+  //          {
+  //              i++;
+  //              agent.destination = goals[i].position;
+
+  //          }
+  //          else
+  //          {
+  //              i--;
+  //              agent.destination = goals[i].position;
+  //          }
+  //      }
 
     }
 

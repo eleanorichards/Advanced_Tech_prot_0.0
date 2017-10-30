@@ -33,24 +33,6 @@ public class CoverChecker : MonoBehaviour {
 	}
 
 
-    public bool CoverAvailable(Vector3 enemyPos)
-    {
-
-        RaycastHit hit;
-        Vector3 direction = (transform.position - enemyPos).normalized;
-        Ray ray = new Ray(transform.position, direction);
-        Debug.DrawRay(transform.position, direction, Color.red);
-        Debug.Log("logged");
-        if (Physics.Raycast(ray, out hit))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-
-    }
 
 
     void OnTriggerStay(Collider col)

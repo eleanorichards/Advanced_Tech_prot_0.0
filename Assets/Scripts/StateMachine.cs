@@ -4,6 +4,7 @@ using UnityEngine;
 
 public enum MemberState
 {
+    Default,
     Attack,
     FindCover,
     FollowLeader,
@@ -12,23 +13,16 @@ public enum MemberState
     FollowMe
 }
 
-public enum ViewState
-{
-    Default,
-    Ally,
-    Enemy,
 
-}
 
 public class StateMachine : MonoBehaviour
 {
-    public static StateMachine Instance;
+    //public static StateMachine Instance;
 
-    void Awake()
-    {
-        Instance = FindObjectOfType<StateMachine>();        
-    }
+    //void Awake()
+    //{
+    //    Instance = FindObjectOfType<StateMachine>();        
+    //}
 
-    public MemberState memberState = MemberState.FindCover;
-    public ViewState viewState = ViewState.Default;
+    public MemberState memberState = MemberState.Default;
 }

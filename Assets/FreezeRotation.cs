@@ -4,16 +4,18 @@ using UnityEngine;
 
 public class FreezeRotation : MonoBehaviour {
 
-    //private Quaternion lock_rotation;
+    private GameObject player;
+    public Vector3 offset = new Vector3(0.0f, 7.0f, 0.0f);
 
 	// Use this for initialization
 	void Start () {
-        //lock_rotation = transform.rotation;
-	}
+        player = GameObject.Find("Player");
+    }
 
 
     void Update()
     {
-        transform.rotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
+        transform.position = player.transform.position + offset;
+
     }
 }

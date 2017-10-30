@@ -21,7 +21,7 @@ public class SquadMovement : MonoBehaviour
     UnityEngine.AI.NavMeshAgent agent;
 
     private Detection detection;
-
+    private StateMachine _SM;
 
 
 
@@ -30,14 +30,17 @@ public class SquadMovement : MonoBehaviour
     {
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         detection = GetComponentInChildren<Detection>();
-        
+        _SM = GetComponent<StateMachine>();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        switch(StateMachine.Instance.memberState)
+        
+        switch(_SM.memberState)
         {
+            case MemberState.Default:
+                break;
             case MemberState.FollowLeader:
                 FollowLeader();
                 break;
@@ -57,7 +60,7 @@ public class SquadMovement : MonoBehaviour
                 FormV();
                 break;
             default:
-                RunToCover();
+                
                 break;
         }
     }
@@ -78,7 +81,7 @@ public class SquadMovement : MonoBehaviour
 
     void FollowLeader()
     {
-        detection.FollowLeader();        
+        agent.SetDestination(detection.LeaderPosition());
     }
 
 
@@ -100,7 +103,7 @@ public class SquadMovement : MonoBehaviour
 
     void FollowPlayer()
     {
-
+        agent.SetDestination(detection.RecallPosition());
     }
 
     void AttackEnemies()

@@ -14,14 +14,15 @@ public class BasicShoot : MonoBehaviour {
 
     private Rigidbody bullet_rig;
     private GameObject player = null;
-    private GameObject canvas = null;
+    private GameObject HUD = null;
     private LayerMask cover_mask = 9;
     private Renderer rend = null;
-
+    
     // Use this for initialization
     void Start () {
         bullet_rig = bullet.GetComponent<Rigidbody>();
         player = GameObject.Find("Player");
+        HUD = GameObject.Find("HUD");
 	}
 
     // Update is called once per frame
@@ -40,11 +41,11 @@ public class BasicShoot : MonoBehaviour {
         {
             if(hit.collider.gameObject.CompareTag("Ally"))
             {
-                print("over ally" + hit.collider.gameObject.name);
                 switchCrosshairState(ViewState.Ally);
                 if (Input.GetButtonDown("Fire1")) 
                 {
-                    AllySelected(hit.collider.gameObject);                   
+                    AllySelected(hit.collider.gameObject);
+                    player.GetComponent<CanvasScript>().displayHUD();               
                 }              
             }
             else if(hit.collider.gameObject.tag == "Enemy")
@@ -71,15 +72,22 @@ public class BasicShoot : MonoBehaviour {
 
     void AllySelected(GameObject ally)
     {
-        ally.GetComponentInChildren<Detection>().SetLeader(true);
-        rend = ally.GetComponent<Renderer>();
-        rend.material.color = Color.red;
+        if (HUD)
+        {
+            HUD.GetComponent<HUDSelection>().SetSelected(ally);
+
+            rend = ally.GetComponent<Renderer>();
+            rend.material.color = Color.red;
+        }
+        else
+            return;
+        
     }
 
 
     void switchCrosshairState(ViewState state)
     {
-        StateMachine.Instance.viewState = state;
+        ViewStateMachine.Instance.viewState = state;
         player.GetComponent<CanvasScript>().SetCrosshairState();
     }
 

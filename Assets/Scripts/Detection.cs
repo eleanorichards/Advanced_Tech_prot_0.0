@@ -12,24 +12,31 @@ public class Detection : MonoBehaviour
     public List<GameObject> allies = new List<GameObject>(100);
     public List<GameObject> cover_points = new List<GameObject>(500);
 
-    private GameObject closest_enemy = null;
-    private GameObject closest_cover = null;
+    public GameObject closest_enemy = null;
+    public GameObject closest_cover = null;
     private LayerMask cover_mask = 9;
-    private float temp_distance = Mathf.Infinity;
-    private bool is_leader = false;
-    private Vector3 target_pos = Vector3.zero;
+    public float enemy_distance = Mathf.Infinity;
+    public float cover_distance = Mathf.Infinity;
+    public float ally_distance = Mathf.Infinity;
+
+
+    public bool is_leader = false;
+    public Vector3 target_pos = Vector3.zero;
     private GameObject leader = null;
+    private GameObject player = null;
+
     // Use this for initialization
     void Start()
     {
-        foreach(GameObject cover in cover_points)
-        {
-            if(!cover.GetComponent<CoverChecker>().isActive())
-            {
-                cover.SetActive(false);
-                print("set inactive: " + cover);
-            }
-        }
+        player = GameObject.Find("Player");
+        //foreach(GameObject cover in cover_points)
+        //{
+        //    if(!cover.GetComponent<CoverChecker>().isActive())
+        //    {
+        //        cover.SetActive(false);
+        //        print("set inactive: " + cover);
+        //    }
+        //}
     }
 
     //ENEMY START
@@ -41,71 +48,61 @@ public class Detection : MonoBehaviour
             {
                 Vector3 diff = enemy.transform.position - transform.position;
                 float curDistance = diff.sqrMagnitude;
-                if (curDistance < temp_distance)
+                if (curDistance < enemy_distance)
                 {
                     closest_enemy = enemy;
-                    temp_distance = curDistance;
-                    
+                    enemy_distance = curDistance;                   
                 }
 
             }
+        }
+    }
+
+    public Vector3 ClosestEnemyTransform()
+    {
+        //if(closest_enemy = null)
+        //{
+        //    FindNearestEnemy();
+        //}
+        FindNearestEnemy();
+        if (closest_enemy)
+        {
+            return closest_enemy.transform.position;
+        }
+        else
+        {
+            Debug.Log("No enemies in range");
+            return transform.position;
         }
     }
     //ENEMY END
 
 
     //LEADER START
-    private void FindLeader(/*GameObject selected*/)
+
+    public void ChangeAllLeaders(GameObject _leader)
     {
-        foreach (GameObject ally in allies)
-        {
-            if (ally.GetComponentInChildren<Detection>().IsLeader())
-            {
-                leader = ally;
-            }
-            else
-                return;
-        }
+        leader = _leader;
     }
 
-    public void FollowLeader()
-    {
-        if(leader == null)
-        {
-            FindLeader();
-        }
-        else
-        {
-            foreach (GameObject ally in allies)
-            {
-                Vector3 distance = leader.transform.position - transform.position;
-                float curDistance = distance.sqrMagnitude;
-                Debug.Log(curDistance);
-                //if (curDistance > bump_radius)
-                //{
-                target_pos = leader.transform.position;
-                //}
-
-            }
-
-        }
-    }
 
     public void SetLeader(bool setLeader)
     {        
         foreach (GameObject ally in allies)
         {
+            ally.GetComponentInChildren<Detection>().ChangeAllLeaders(gameObject);
             if (ally != this.gameObject)
             {
                 if (ally.GetComponentInChildren<Detection>().IsLeader())
                 {
-                    ally.GetComponent<Detection>().SetLeader(false);
+                    ally.GetComponentInChildren<Detection>().SetLeader(false);
                 }
             }
+            ally.GetComponent<StateMachine>().memberState = MemberState.FollowLeader;
         }
         is_leader = setLeader;
-        Debug.Log("set a leader");
     }
+
 
     public bool IsLeader()
     {
@@ -115,9 +112,13 @@ public class Detection : MonoBehaviour
 
     public Vector3 LeaderPosition()
     {
-        return target_pos;
+        if (!is_leader)
+            return leader.transform.position;
+        else
+            return transform.position;
     }
     //LEADER END
+
 
     //COVER START
 	void FindNearestCover()
@@ -131,13 +132,17 @@ public class Detection : MonoBehaviour
                 {
                     Vector3 diff = cover.transform.position - transform.position;
                     float curDistance = diff.sqrMagnitude;
-                    if (curDistance < temp_distance)
+                    if (curDistance < cover_distance)
                     {
                         closest_cover = cover;
-                        temp_distance = curDistance;
+                        cover_distance = curDistance;
 						target_pos = closest_cover.transform.position;
                     }
                 }
+            }
+            else
+            {
+                print("no cover for some reason");
             }
         }
     }
@@ -145,31 +150,31 @@ public class Detection : MonoBehaviour
 
     private bool CoverCanSeeEnemy(GameObject cover_point)
     {
-        if(!closest_enemy)
-        {
-            FindNearestEnemy();
-        }
+        
+        FindNearestEnemy();
+        
         bool return_value = true;
         //raycast between cover and closest enemy to player        
-        if (cover_point)
+        if (cover_point && closest_enemy)
         {
-            foreach(GameObject enemy in enemies)
-            {
+            //foreach(GameObject enemy in enemies)
+            //{
                 RaycastHit hit;
                 Vector3 direction = (cover_point.transform.position - closest_enemy.transform.position).normalized;
                 Ray ray = new Ray(cover_point.transform.position, direction);
-                Debug.DrawRay(cover_point.transform.position, direction, Color.red);
                 if (Physics.Raycast(ray, out hit, cover_mask))
                 {
+                    Debug.DrawRay(cover_point.transform.position, direction, Color.red);
                     return_value =  true;
                 }
                 else
                 {
+                    Debug.DrawRay(cover_point.transform.position, direction, Color.blue);
                     return_value = false;
                 }
-            }
+           // }
         }
-        else
+        else if(!closest_enemy)
         {
             return_value = false;
         }
@@ -185,25 +190,14 @@ public class Detection : MonoBehaviour
 		}
         else
         {
+            print("returning null");
 			return transform.position;
 		}
 	}
     //COVER END
 
 
-    public Vector3 ClosestEnemyTransform()
-    {
-        FindNearestEnemy();
-        if (closest_enemy)
-        {
-            return closest_enemy.transform.position;
-        }
-        else
-        {
-            Debug.Log("No enemies in range");
-            return transform.position;
-        }
-    }
+  
 
     //FORM LINE START
     void FormLine()
@@ -225,12 +219,27 @@ public class Detection : MonoBehaviour
     //FORM LINE END
 
 
-        //ADDITIONS
+    //FOLLOW ME START
+    void FollowMe()
+    {
+
+    }
+
+
+    public Vector3 RecallPosition()
+    {
+        return player.transform.position;
+    }
+    //FOLLOW ME END
+
+
+    //ADDITIONS
     void OnTriggerEnter(Collider col)
     {
         //Enemy addition
         if (col.gameObject.CompareTag("Enemy"))
         {
+            print("Enemy Added");
             enemies.Add(col.gameObject);
         }
         //Ally addition
@@ -254,7 +263,8 @@ public class Detection : MonoBehaviour
         {
             for (int i = enemies.Count - 1; i >= 0; i--)
             {
-                enemies.RemoveAt(i);               
+                print("enemy Removed");
+                enemies.RemoveAt(i);
             }
         }
         //Ally remove

@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class CanvasScript : MonoBehaviour {
 
 
-    public Text centreDisplay;
     public GameObject HUD;
     public Image crosshair;
     private string view_state = "";
@@ -18,51 +17,49 @@ public class CanvasScript : MonoBehaviour {
         //INVESTIGATION font
         player = GameObject.Find("Player");
         HUD.SetActive(false);
-        centreDisplay.enabled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         //Switch states depending on keycodes..
-        if(Input.GetKey(KeyCode.Q))
-        {
-            displayHUD();
-        }    
+        //if(Input.GetKey(KeyCode.Q))
+        //{
+        //    displayHUD();
+        //}    
     }
 
 
-    IEnumerator ShowMessage(string message, float delay)
-    {
-        centreDisplay.text = message;
-        centreDisplay.enabled = true;
-        yield return new WaitForSeconds(delay);
-        centreDisplay.enabled = false;
+    //IEnumerator ShowMessage(string message, float delay)
+    //{
+    //    centreDisplay.text = message;
+    //    centreDisplay.enabled = true;
+    //    yield return new WaitForSeconds(delay);
+    //    centreDisplay.enabled = false;
 
-    }
+    //}
 
 
     public void SetCrosshairState()
     {
-        switch (StateMachine.Instance.viewState)
+        switch (ViewStateMachine.Instance.viewState)
         {
-            case ViewState.Ally:
-                
-                crosshair.color = Color.blue;
+            case ViewState.Ally:          
+                crosshair.color = Color.green;
                 break;
             case ViewState.Enemy:
                 crosshair.color = Color.red;
                 break;
             case ViewState.Default:
-                crosshair.color = Color.green;
+                crosshair.color = Color.cyan;
                 break;
         }
     }
 
 
-    void displayHUD()
+    public void displayHUD()
     {        
-        if (StateMachine.Instance.viewState == ViewState.Ally)
+        if (ViewStateMachine.Instance.viewState == ViewState.Ally)
         {
             player.GetComponent<PlayerMovement>().enabled = false;
             player.GetComponent<BasicShoot>().enabled = false;
