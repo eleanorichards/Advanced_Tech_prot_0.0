@@ -13,17 +13,16 @@ public class HUDSelection : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-       // ally_selected.GetComponent<StateMachine>();
-
         player = GameObject.Find("Player");
     }
 
     public void RecieveButtonmessage(string message)
     {
+        ally_selected.GetComponentInChildren<Detection>().SetLeader(true);
         switch (message)
         {
             case "Follow":
-                ally_selected.GetComponentInChildren<Detection>().SetLeader(true);
+                ally_selected.GetComponentInChildren<Detection>().SetAllToFollowState();                
                 ally_selected.GetComponent<StateMachine>().memberState = MemberState.FollowLeader;
                 break;
             case "Attack":

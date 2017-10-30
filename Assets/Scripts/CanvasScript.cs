@@ -30,14 +30,7 @@ public class CanvasScript : MonoBehaviour {
     }
 
 
-    //IEnumerator ShowMessage(string message, float delay)
-    //{
-    //    centreDisplay.text = message;
-    //    centreDisplay.enabled = true;
-    //    yield return new WaitForSeconds(delay);
-    //    centreDisplay.enabled = false;
 
-    //}
 
 
     public void SetCrosshairState()

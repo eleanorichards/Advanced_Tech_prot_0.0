@@ -24,6 +24,7 @@ public class Detection : MonoBehaviour
     public Vector3 target_pos = Vector3.zero;
     private GameObject leader = null;
     private GameObject player = null;
+    private Vector3 offset;
 
     // Use this for initialization
     void Start()
@@ -41,7 +42,8 @@ public class Detection : MonoBehaviour
 
     //ENEMY START
     private void FindNearestEnemy()
-    {     
+    {
+        enemy_distance = Mathf.Infinity;
         foreach (GameObject enemy in enemies)
         {
             if (enemy != null)
@@ -90,6 +92,8 @@ public class Detection : MonoBehaviour
     {        
         foreach (GameObject ally in allies)
         {
+            print(ally + "leader set");
+
             ally.GetComponentInChildren<Detection>().ChangeAllLeaders(gameObject);
             if (ally != this.gameObject)
             {
@@ -98,9 +102,17 @@ public class Detection : MonoBehaviour
                     ally.GetComponentInChildren<Detection>().SetLeader(false);
                 }
             }
-            ally.GetComponent<StateMachine>().memberState = MemberState.FollowLeader;
         }
         is_leader = setLeader;
+    }
+
+
+    public void SetAllToFollowState()
+    {
+        foreach (GameObject ally in allies)
+        {
+            ally.GetComponent<StateMachine>().memberState = MemberState.FollowLeader;
+        }
     }
 
 
@@ -197,24 +209,44 @@ public class Detection : MonoBehaviour
     //COVER END
 
 
-  
-
     //FORM LINE START
-    void FormLine()
+    public void FormLine()
     {
+        int multiplier = 1;
+        float offset_change = 2f;
+        Vector3 temp_offset = transform.position;
+        
         foreach (GameObject ally in allies)
         {
-            if (is_leader)
+            if (leader)
             {
+                temp_offset = new Vector3(offset_change * multiplier, 0f, 0f) + leader.transform.position;
+                ally.GetComponentInChildren<Detection>().SetLinePos(temp_offset);
+                multiplier++;
+                print(multiplier);
+            }
+            else
                 return;
-            }
-            else if(ally.GetComponent<Detection>().IsLeader())
-            {
-               // ally.transform
-               // Vector3 offset = temp_loc + i * multiplier;
-                //i++
-            }
         }
+    }
+
+
+    public void SetLinePos(Vector3 _offset)
+    {
+        offset = _offset;
+    }
+
+
+    public Vector3 FormLineTransform()
+    {
+        if (!is_leader)
+        {
+            FormLine();
+            print(offset);
+            return offset;
+        }
+        else
+            return transform.position; 
     }
     //FORM LINE END
 
@@ -239,7 +271,6 @@ public class Detection : MonoBehaviour
         //Enemy addition
         if (col.gameObject.CompareTag("Enemy"))
         {
-            print("Enemy Added");
             enemies.Add(col.gameObject);
         }
         //Ally addition

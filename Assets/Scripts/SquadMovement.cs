@@ -15,7 +15,7 @@ public class SquadMovement : MonoBehaviour
     private bool following_leader = false;
     private string statename = "";
 
-    public float bump_radius = 5.0f;
+    public float bump_radius = 3.0f;
     public float immediate_range = 5.0f;
 
     UnityEngine.AI.NavMeshAgent agent;
@@ -81,7 +81,7 @@ public class SquadMovement : MonoBehaviour
 
     void FollowLeader()
     {
-        agent.SetDestination(detection.LeaderPosition());
+        SetTargetPos(detection.LeaderPosition());
     }
 
 
@@ -98,17 +98,32 @@ public class SquadMovement : MonoBehaviour
 
     void FormLine()
     {
-       
+        SetTargetPos(detection.FormLineTransform());
+        //agent.SetDestination(detection.FormLineTransform());
     }
 
     void FollowPlayer()
     {
-        agent.SetDestination(detection.RecallPosition());
+        SetTargetPos(detection.RecallPosition());
     }
 
     void AttackEnemies()
     {
         agent.SetDestination(detection.ClosestEnemyTransform());
+    }
+
+
+    void SetTargetPos(Vector3 _target)
+    {
+        Vector3 diff = _target - transform.position;
+        float curDistance = diff.sqrMagnitude;
+        if (curDistance > bump_radius)
+        {
+            agent.SetDestination(_target);
+        }
+        else
+            agent.SetDestination(transform.position);
+            //return;
     }
 
 
