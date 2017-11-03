@@ -15,7 +15,7 @@ public class BasicShoot : MonoBehaviour {
     private Rigidbody bullet_rig;
     private GameObject player = null;
     private GameObject HUD = null;
-    private LayerMask cover_mask = 9;
+    public LayerMask cover_mask;
     private Renderer rend = null;
     
     // Use this for initialization
@@ -39,6 +39,7 @@ public class BasicShoot : MonoBehaviour {
 
         if (Physics.Raycast(gun.transform.position, gun.transform.forward, out hit, view_distance, cover_mask))
         {
+                print(hit.collider.gameObject);
             if(hit.collider.gameObject.CompareTag("Ally"))
             {
                 switchCrosshairState(ViewState.Ally);
