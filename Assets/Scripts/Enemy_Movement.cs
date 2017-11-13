@@ -19,13 +19,13 @@ public class Enemy_Movement : MonoBehaviour {
     private NavMeshAgent agent;
 
 	//Movement Stuff
-	public float terminal_time = 5.0f;
+	public float terminal_time = 500.0f;
 	private float target_time;
 	private int patrolPoint = 0;
 	private int previous_position;
 	private Vector3 target = Vector3.zero;
 	private bool timer_active = false;
-	private float current_time = 0.0f;
+	public float current_time = 0.0f;
 	private bool move_target = false;
 	private float timer = 0.0f;
     private GameObject FOV;
@@ -72,8 +72,8 @@ public class Enemy_Movement : MonoBehaviour {
 			SetTarget ();
 			move_target = false;
 		}
-		Move();
         agent.SetDestination(target);
+		Move();
 	}
 
 	void SetTarget()
@@ -100,8 +100,10 @@ public class Enemy_Movement : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other)
 	{
-		if (other.gameObject == patrolPoints[previous_position])
+        print("UGH" + other.gameObject.name);
+		if (other.CompareTag("PatrolPoint"))
 		{
+            print("reached point");
 			timer_active = true;
 
 		}
