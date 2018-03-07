@@ -3,115 +3,109 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Enemy_Movement : MonoBehaviour {
+public class Enemy_Movement : MonoBehaviour
+{
+    public List<GameObject> patrolPoints = new List<GameObject>(); //Add in inspector
 
-	public List<GameObject> patrolPoints = new List<GameObject>(); //Add in inspector
-    
-	public enum EnemyState
-	{
-		Idle,
-		Moving,
-		Attack
-	}
-	public EnemyState enemyState;
+    public enum EnemyState
+    {
+        Idle,
+        Moving,
+        Attack
+    }
 
-	private GameObject player;
+    public EnemyState enemyState;
+
+    private GameObject player;
     private NavMeshAgent agent;
 
-	//Movement Stuff
-	public float terminal_time = 500.0f;
-	private float target_time;
-	private int patrolPoint = 0;
-	private int previous_position;
-	private Vector3 target = Vector3.zero;
-	private bool timer_active = false;
-	public float current_time = 0.0f;
-	private bool move_target = false;
-	private float timer = 0.0f;
+    private bool in_progress = false;
+    private int previous_position;
+    private Vector3 target = Vector3.zero;
     private GameObject FOV;
+    private System.Random _rnd = new System.Random();
 
     //FOV
-    private Vector3 dist = new Vector3();
-    private Vector3 distprevframe = new Vector3();
-    private Vector3 dir = new Vector3();
+    private Vector3 dist;
 
-    void Start()
+    private Vector3 distprevframe;
+    private Vector3 dir;
+
+    private void Start()
     {
         player = GameObject.Find("Player");
         agent = GetComponent<NavMeshAgent>();
-		enemyState = EnemyState.Idle;
-		int i = Random.Range (0, patrolPoints.Count);
-		previous_position = i;
-		target = patrolPoints [i].transform.position;
-		target_time	= terminal_time;
+        enemyState = EnemyState.Idle;
+        agent.SetDestination(SetTarget());
         FOV = GetComponentInChildren<FOV>().gameObject;
     }
 
-
-    void Update()
+    private void FixedUpdate()
     {
-        Patrol();
+        switch (enemyState)
+        {
+            case EnemyState.Idle:
+                if (!in_progress)
+                    Patrol();
+
+                break;
+
+            case EnemyState.Moving:
+                break;
+
+            case EnemyState.Attack:
+                break;
+
+            default:
+                break;
+        }
     }
 
-	void Patrol()
-	{
-		if (timer_active) 
-		{
-			current_time += Time.deltaTime;
-			if (current_time >= terminal_time) 
-			{
-				move_target = true;
-				timer_active = false;
-				current_time = 0f;
-			}
-			terminal_time = target_time;
-		}
-		if (move_target) 
-		{
-			
-			SetTarget ();
-			move_target = false;
-		}
-        agent.SetDestination(target);
-		Move();
-	}
-
-	void SetTarget()
-	{
-		int i = Random.Range(0, patrolPoints.Count);
-		if (previous_position == i)
-		{
-			i = Random.Range(0, patrolPoints.Count);
-		}
-		target = patrolPoints[i].transform.position;
-		previous_position = i;
-	}
-
-	private void Move()
-	{
-		timer += Time.deltaTime;
-		if (timer >= 0.05f) 
-		{
-			//FOVRotation();
-			timer = 0;
-		}
-	}
-
-
-	void OnTriggerEnter(Collider other)
-	{
-        print("UGH" + other.gameObject.name);
-		if (other.CompareTag("PatrolPoint"))
-		{
-            print("reached point");
-			timer_active = true;
-
-		}
-	}
-
-    void FOVRotation()
+    private void Patrol()
     {
+        in_progress = true;
+        float waitTime = _rnd.Next(4, 10);
+        StartCoroutine(WaitAtTerminal(waitTime));
+    }
 
+    private IEnumerator WaitAtTerminal(float _delay)
+    {
+        yield return new WaitForSeconds(_delay);
+        enemyState = EnemyState.Moving;
+        agent.SetDestination(SetTarget());
+    }
+
+    private Vector3 SetTarget()
+    {
+        int i = Random.Range(0, patrolPoints.Count);
+        if (previous_position == i)
+        {
+            i = Random.Range(0, patrolPoints.Count);
+        }
+        previous_position = i;
+        return patrolPoints[i].transform.position;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("PatrolPoint"))
+        {
+            print("reached point");
+            in_progress = false;
+            enemyState = EnemyState.Idle;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("PatrolPoint"))
+        {
+            enemyState = EnemyState.Moving;
+        }
+    }
+
+    private void FOVRotation()
+    {
         dist = FOV.transform.position;
         dir = dist - distprevframe;
         dir = dir * 90;
@@ -119,7 +113,5 @@ public class Enemy_Movement : MonoBehaviour {
 
         float angle = Mathf.Atan2(dir.z, dir.y) * Mathf.Rad2Deg;
         FOV.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-
     }
-
 }

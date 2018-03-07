@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum MemberState
+public enum GlobalState
 {
     Default,
     Attack,
     FindCover,
-    FollowLeader,
     FormV,
     FormLine,
     FollowMe
 }
 
-public class StateMachine : MonoBehaviour
+public class GlobalStateMachine : MonoBehaviour
 {
     //public static StateMachine Instance;
 
@@ -22,5 +21,5 @@ public class StateMachine : MonoBehaviour
     //    Instance = FindObjectOfType<StateMachine>();
     //}
 
-    public MemberState memberState = MemberState.Default;
+    public GlobalState globalState = GlobalState.Default;
 }

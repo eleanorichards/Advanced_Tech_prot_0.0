@@ -18,55 +18,61 @@ public class SquadMovement : MonoBehaviour
     public float bump_radius = 3.0f;
     public float immediate_range = 5.0f;
 
-    UnityEngine.AI.NavMeshAgent agent;
+    private UnityEngine.AI.NavMeshAgent agent;
 
     private Detection detection;
     private StateMachine _SM;
-
-
+    private GlobalStateMachine _GSM;
 
     // Use this for initialization
-    void Start()
+    private void Start()
     {
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         detection = GetComponentInChildren<Detection>();
         _SM = GetComponent<StateMachine>();
+        _GSM = GameObject.Find("GlobalStateMachine").GetComponent<GlobalStateMachine>();
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        
-        switch(_SM.memberState)
+        switch (_SM.memberState)
         {
             case MemberState.Default:
                 break;
+
             case MemberState.FollowLeader:
                 FollowLeader();
                 break;
+
             case MemberState.FindCover:
-                RunToCover();
+                if (!in_cover)
+                    RunToCover();
                 break;
+
             case MemberState.Attack:
                 AttackEnemies();
                 break;
+
             case MemberState.FollowMe:
                 FollowPlayer();
                 break;
+
             case MemberState.FormLine:
                 FormLine();
                 break;
+
             case MemberState.FormV:
                 FormV();
                 break;
+
             default:
-                
+
                 break;
         }
     }
 
-
-    void RunToCover()
+    private void RunToCover()
     {
         if (!in_cover)
         {
@@ -78,42 +84,36 @@ public class SquadMovement : MonoBehaviour
         }
     }
 
-
-    void FollowLeader()
+    private void FollowLeader()
     {
         SetTargetPos(detection.LeaderPosition());
     }
 
-
-    void FormV()
-    {
-        
-    }
-
-
-    void FormVShape()
+    private void FormV()
     {
     }
 
+    private void FormVShape()
+    {
+    }
 
-    void FormLine()
+    private void FormLine()
     {
         SetTargetPos(detection.FormLineTransform());
         //agent.SetDestination(detection.FormLineTransform());
     }
 
-    void FollowPlayer()
+    private void FollowPlayer()
     {
         SetTargetPos(detection.RecallPosition());
     }
 
-    void AttackEnemies()
+    private void AttackEnemies()
     {
-        agent.SetDestination(detection.ClosestEnemyTransform());
+        SetTargetPos(detection.ClosestEnemyTransform());
     }
 
-
-    void SetTargetPos(Vector3 _target)
+    private void SetTargetPos(Vector3 _target)
     {
         Vector3 diff = _target - transform.position;
         float curDistance = diff.sqrMagnitude;
@@ -123,11 +123,10 @@ public class SquadMovement : MonoBehaviour
         }
         else
             agent.SetDestination(transform.position);
-            //return;
+        //return;
     }
 
-
-    void OnCollisionEnter(Collision col)
+    private void OnCollisionEnter(Collision col)
     {
         if (col.gameObject.CompareTag("Enemy"))
         {
@@ -138,11 +137,9 @@ public class SquadMovement : MonoBehaviour
         {
             in_cover = true;
         }
-
     }
 
-
-    void OnCollisionExit(Collision col)
+    private void OnCollisionExit(Collision col)
     {
         if (col.gameObject.CompareTag("Cover"))
         {
