@@ -7,8 +7,6 @@ public class SquadMovement : MonoBehaviour
     private GameObject closest_enemy = null;
     private GameObject closest_cover = null;
 
-    private List<Collider> hitColliders = new List<Collider>(200);
-    private List<GameObject> allies = new List<GameObject>(100);
     private float distance = Mathf.Infinity;
 
     private bool in_cover = false;
@@ -36,6 +34,35 @@ public class SquadMovement : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
+        switch (_GSM.globalState)
+        {
+            case GlobalState.Default:
+                //LEAVE GROUP //SET ALL COLOURS TO BLUE OR SOMETHING
+                break;
+
+            case GlobalState.Attack:
+                _SM.memberState = MemberState.Attack;
+                break;
+
+            case GlobalState.FindCover:
+                _SM.memberState = MemberState.FindCover;
+                break;
+
+            case GlobalState.FormV:
+                _SM.memberState = MemberState.FormV;
+                break;
+
+            case GlobalState.FormLine:
+                _SM.memberState = MemberState.FormLine;
+                break;
+
+            case GlobalState.FollowMe:
+                _SM.memberState = MemberState.FollowMe;
+                break;
+
+            default:
+                break;
+        }
         switch (_SM.memberState)
         {
             case MemberState.Default:

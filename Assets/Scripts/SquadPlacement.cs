@@ -4,25 +4,21 @@ using UnityEngine;
 
 public class SquadPlacement : MonoBehaviour
 {
-
     public GameObject SquadMember;
 
     // Use this for initialization
-    void Start()
+    private void Start()
     {
     }
-
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-
     }
 
-
-    void OnCollisionEnter(Collision col)
+    private void OnTriggerEnter(Collider col)
     {
-        if (col.gameObject.tag == "Ground")
+        if (col.gameObject.CompareTag("Ground"))
         {
             Instantiate(SquadMember, transform.position, transform.rotation);
             Destroy(gameObject);

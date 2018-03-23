@@ -14,12 +14,15 @@ public enum GlobalState
 
 public class GlobalStateMachine : MonoBehaviour
 {
-    //public static StateMachine Instance;
-
-    //void Awake()
-    //{
-    //    Instance = FindObjectOfType<StateMachine>();
-    //}
-
     public GlobalState globalState = GlobalState.Default;
+
+    public void SetGlobalState(GlobalState _gs)
+    {
+        GameObject[] squaddies = GameObject.FindGameObjectsWithTag("Squad");
+        foreach (GameObject squadMember in squaddies)
+        {
+            squadMember.GetComponent<StateMachine>().memberState = MemberState.Default;
+        }
+        globalState = _gs;
+    }
 }
