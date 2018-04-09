@@ -18,9 +18,12 @@ public class SquadMovement : MonoBehaviour
 
     private UnityEngine.AI.NavMeshAgent agent;
 
+    private float distance_apart = 2.0f;
     private Detection detection;
     private StateMachine _SM;
     private GlobalStateMachine _GSM;
+
+    private List<GameObject> squaddies = new List<GameObject>();
 
     // Use this for initialization
     private void Start()
@@ -118,10 +121,61 @@ public class SquadMovement : MonoBehaviour
 
     private void FormV()
     {
+        squaddies.Clear();
+        foreach (GameObject squaddie in GameObject.FindGameObjectsWithTag("Ally"))
+        {
+            squaddies.Add(squaddie);
+        }
     }
 
     private void FormVShape()
     {
+        squaddies.Clear();
+        foreach (GameObject squaddie in GameObject.FindGameObjectsWithTag("Ally"))
+        {
+            squaddies.Add(squaddie);
+        }
+        Vector3 leaderPos = squaddies[0].transform.position;
+        for (int i = 1; i < squaddies.Count; i++)
+        {
+            if (i < squaddies.Count / 2)
+            {
+            }
+            else
+            {
+            }
+        }
+
+        //Kris' code
+        Vector3 target = Vector3.zero;
+        Vector3 pos_change = Vector3.zero;
+        bool toggle = true;
+        int change_mult = 1;
+
+        bool two_at_front = false;
+
+        //ignored hosted AI
+
+        two_at_front = ((squaddies.Count - 1) % 2) == 0;
+
+        two_at_front = (squaddies.Count % 2) == 0;
+
+        foreach (GameObject squaddie in squaddies)
+        {
+            if (toggle) //lhs
+            {
+                pos_change = new Vector3(-change_mult * distance_apart, 0f, change_mult * distance_apart);
+
+                toggle = false;
+            }
+            else //rhs
+            {
+                pos_change = new Vector3(change_mult * distance_apart, 0f, change_mult * distance_apart);
+
+                toggle = true;
+                change_mult++;
+            }
+        }
     }
 
     private void FormLine()

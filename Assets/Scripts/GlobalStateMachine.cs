@@ -21,7 +21,7 @@ public class GlobalStateMachine : MonoBehaviour
         GameObject[] squaddies = GameObject.FindGameObjectsWithTag("Squad");
         foreach (GameObject squadMember in squaddies)
         {
-            squadMember.GetComponent<StateMachine>().memberState = MemberState.Default;
+            squadMember.GetComponent<StateMachine>().memberState = MemberState.Default; // set individual state to default
         }
         globalState = _gs;
     }
