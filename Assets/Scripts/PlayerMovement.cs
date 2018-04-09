@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour {
     private float pitch;
     private float yaw;
     private float playerHeight;
-
+    private Detection allyDetection;
     public int sensitivity = 5;
 
     // Use this for initialization

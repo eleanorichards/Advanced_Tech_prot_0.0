@@ -9,11 +9,14 @@ public class HUDSelection : MonoBehaviour
     public Image crosshair;
     private GameObject ally_selected = null;
     private GlobalStateMachine _GS;
+    private GlobalSquadMovement _GSM;
 
     // Use this for initialization
     private void Start()
     {
         player = GameObject.Find("Player");
+        _GSM = GameObject.Find("GlobalStateMachine").GetComponent<GlobalSquadMovement>();
+
         _GS = GameObject.Find("GlobalStateMachine").GetComponent<GlobalStateMachine>();
     }
 
@@ -52,22 +55,29 @@ public class HUDSelection : MonoBehaviour
         switch (message)
         {
             case "Attack":
+                _GSM.stateChanged = false;
                 _GS.globalState = GlobalState.Attack;
                 break;
 
             case "Cover":
+
                 _GS.globalState = GlobalState.FindCover;
                 break;
 
             case "Wedge":
+                _GSM.stateChanged = false;
+
                 _GS.globalState = GlobalState.FormV;
                 break;
 
             case "Line":
+                _GSM.stateChanged = false;
+
                 _GS.globalState = GlobalState.FormLine;
                 break;
 
             case "Recall":
+
                 _GS.globalState = GlobalState.FollowMe;
                 break;
 

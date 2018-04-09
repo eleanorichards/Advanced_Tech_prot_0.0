@@ -29,15 +29,7 @@ public class Detection : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        player = GameObject.Find("Player");
-        //foreach(GameObject cover in cover_points)
-        //{
-        //    if(!cover.GetComponent<CoverChecker>().isActive())
-        //    {
-        //        cover.SetActive(false);
-        //        print("set inactive: " + cover);
-        //    }
-        //}
+
     }
 
     //ENEMY START
@@ -62,10 +54,6 @@ public class Detection : MonoBehaviour
 
     public Vector3 ClosestEnemyTransform()
     {
-        //if(closest_enemy = null)
-        //{
-        //    FindNearestEnemy();
-        //}
         FindNearestEnemy();
         if (closest_enemy)
         {
@@ -169,22 +157,19 @@ public class Detection : MonoBehaviour
         //raycast between cover and closest enemy to player        
         if (cover_point && closest_enemy)
         {
-            //foreach(GameObject enemy in enemies)
-            //{
-                RaycastHit hit;
-                Vector3 direction = (cover_point.transform.position - closest_enemy.transform.position).normalized;
-                Ray ray = new Ray(cover_point.transform.position, direction);
-                if (Physics.Raycast(ray, out hit, cover_mask))
-                {
-                    Debug.DrawRay(cover_point.transform.position, direction, Color.red);
-                    return_value =  true;
-                }
-                else
-                {
-                    Debug.DrawRay(cover_point.transform.position, direction, Color.blue);
-                    return_value = false;
-                }
-           // }
+            RaycastHit hit;
+            Vector3 direction = (cover_point.transform.position - closest_enemy.transform.position).normalized;
+            Ray ray = new Ray(cover_point.transform.position, direction);
+            if (Physics.Raycast(ray, out hit, cover_mask))
+            {
+                Debug.DrawRay(cover_point.transform.position, direction, Color.red);
+                return_value =  true;
+            }
+            else
+            {
+                Debug.DrawRay(cover_point.transform.position, direction, Color.blue);
+                return_value = false;
+            }
         }
         else if(!closest_enemy)
         {
@@ -206,58 +191,9 @@ public class Detection : MonoBehaviour
 			return transform.position;
 		}
 	}
-    //COVER END
-
-
-    //FORM LINE START
-    public void FormLine()
-    {
-        int multiplier = 1;
-        float offset_change = 2f;
-        Vector3 temp_offset = transform.position;
-        
-        foreach (GameObject ally in allies)
-        {
-            if (leader)
-            {
-                temp_offset = new Vector3(offset_change * multiplier, 0f, 0f) + leader.transform.position;
-                ally.GetComponentInChildren<Detection>().SetLinePos(temp_offset);
-                multiplier++;
-                print(multiplier);
-            }
-            else
-                return;
-        }
-    }
-
-
-    public void SetLinePos(Vector3 _offset)
-    {
-        offset = _offset;
-    }
-
-
-    public Vector3 FormLineTransform()
-    {
-        if (!is_leader)
-        {
-            FormLine();
-            print(offset);
-            return offset;
-        }
-        else
-            return transform.position; 
-    }
-    //FORM LINE END
-
+    //COVER END 
 
     //FOLLOW ME START
-    void FollowMe()
-    {
-
-    }
-
-
     public Vector3 RecallPosition()
     {
         return player.transform.position;
@@ -294,7 +230,7 @@ public class Detection : MonoBehaviour
         {
             for (int i = enemies.Count - 1; i >= 0; i--)
             {
-                print("enemy Removed");
+                //print("enemy Removed");
                 enemies.RemoveAt(i);
             }
         }
