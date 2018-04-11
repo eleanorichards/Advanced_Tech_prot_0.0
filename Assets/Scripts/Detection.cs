@@ -4,10 +4,8 @@ using UnityEngine;
 
 //not doing multiple orders at once is because of temp_distance
 
-
 public class Detection : MonoBehaviour
 {
-
     public List<GameObject> enemies = new List<GameObject>(100);
     public List<GameObject> allies = new List<GameObject>(100);
     public List<GameObject> cover_points = new List<GameObject>(500);
@@ -19,7 +17,6 @@ public class Detection : MonoBehaviour
     public float cover_distance = Mathf.Infinity;
     public float ally_distance = Mathf.Infinity;
 
-
     public bool is_leader = false;
     public Vector3 target_pos = Vector3.zero;
     private GameObject leader = null;
@@ -27,9 +24,8 @@ public class Detection : MonoBehaviour
     private Vector3 offset;
 
     // Use this for initialization
-    void Start()
+    private void Start()
     {
-
     }
 
     //ENEMY START
@@ -45,9 +41,8 @@ public class Detection : MonoBehaviour
                 if (curDistance < enemy_distance)
                 {
                     closest_enemy = enemy;
-                    enemy_distance = curDistance;                   
+                    enemy_distance = curDistance;
                 }
-
             }
         }
     }
@@ -65,8 +60,8 @@ public class Detection : MonoBehaviour
             return transform.position;
         }
     }
-    //ENEMY END
 
+    //ENEMY END
 
     //LEADER START
 
@@ -75,9 +70,8 @@ public class Detection : MonoBehaviour
         leader = _leader;
     }
 
-
     public void SetLeader(bool setLeader)
-    {        
+    {
         foreach (GameObject ally in allies)
         {
             print(ally + "leader set");
@@ -94,7 +88,6 @@ public class Detection : MonoBehaviour
         is_leader = setLeader;
     }
 
-
     public void SetAllToFollowState()
     {
         foreach (GameObject ally in allies)
@@ -103,12 +96,10 @@ public class Detection : MonoBehaviour
         }
     }
 
-
     public bool IsLeader()
     {
         return is_leader;
     }
-
 
     public Vector3 LeaderPosition()
     {
@@ -117,18 +108,18 @@ public class Detection : MonoBehaviour
         else
             return transform.position;
     }
+
     //LEADER END
 
-
     //COVER START
-	void FindNearestCover()
+    private void FindNearestCover()
     {
-		Vector3 closest_transform = transform.position;
+        Vector3 closest_transform = transform.position;
         foreach (GameObject cover in cover_points)
         {
             if (cover)
             {
-                if(!CoverCanSeeEnemy(cover))
+                if (!CoverCanSeeEnemy(cover))
                 {
                     Vector3 diff = cover.transform.position - transform.position;
                     float curDistance = diff.sqrMagnitude;
@@ -136,7 +127,7 @@ public class Detection : MonoBehaviour
                     {
                         closest_cover = cover;
                         cover_distance = curDistance;
-						target_pos = closest_cover.transform.position;
+                        target_pos = closest_cover.transform.position;
                     }
                 }
             }
@@ -147,14 +138,12 @@ public class Detection : MonoBehaviour
         }
     }
 
-
     private bool CoverCanSeeEnemy(GameObject cover_point)
     {
-        
         FindNearestEnemy();
-        
+
         bool return_value = true;
-        //raycast between cover and closest enemy to player        
+        //raycast between cover and closest enemy to player
         if (cover_point && closest_enemy)
         {
             RaycastHit hit;
@@ -163,7 +152,7 @@ public class Detection : MonoBehaviour
             if (Physics.Raycast(ray, out hit, cover_mask))
             {
                 Debug.DrawRay(cover_point.transform.position, direction, Color.red);
-                return_value =  true;
+                return_value = true;
             }
             else
             {
@@ -171,38 +160,39 @@ public class Detection : MonoBehaviour
                 return_value = false;
             }
         }
-        else if(!closest_enemy)
+        else if (!closest_enemy)
         {
             return_value = false;
         }
         return return_value;
     }
 
-	public Vector3 ClosestCoverTransform()
-	{
-		FindNearestCover ();
-		if (target_pos != Vector3.zero)
+    public Vector3 ClosestCoverTransform()
+    {
+        FindNearestCover();
+        if (target_pos != Vector3.zero)
         {
-			return target_pos;
-		}
+            return target_pos;
+        }
         else
         {
             print("returning null");
-			return transform.position;
-		}
-	}
-    //COVER END 
+            return transform.position;
+        }
+    }
+
+    //COVER END
 
     //FOLLOW ME START
     public Vector3 RecallPosition()
     {
         return player.transform.position;
     }
+
     //FOLLOW ME END
 
-
     //ADDITIONS
-    void OnTriggerEnter(Collider col)
+    private void OnTriggerEnter(Collider col)
     {
         //Enemy addition
         if (col.gameObject.CompareTag("Enemy"))
@@ -221,9 +211,8 @@ public class Detection : MonoBehaviour
         }
     }
 
-
     //REMOVALS
-    void OnTriggerExit(Collider col)
+    private void OnTriggerExit(Collider col)
     {
         //Enemy remove
         if (col.gameObject.CompareTag("Enemy"))

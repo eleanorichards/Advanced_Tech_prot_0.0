@@ -37,7 +37,6 @@ public class SquadMovement : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
-        
         switch (_SM.memberState)
         {
             case MemberState.Default:
@@ -66,7 +65,7 @@ public class SquadMovement : MonoBehaviour
         }
     }
 
-    private void RunToCover()
+    public void RunToCover()
     {
         if (!in_cover)
         {

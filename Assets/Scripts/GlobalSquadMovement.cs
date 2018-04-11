@@ -5,20 +5,20 @@ using UnityEngine;
 public class GlobalSquadMovement : MonoBehaviour
 {
     private GlobalStateMachine _GSM;
-    private float distance_apart = 4.0f;
+    public float distance_apart = 4.0f;
     private List<GameObject> squaddies = new List<GameObject>();
     public bool stateChanged = false;
     private GameObject player;
     // Use this for initialization
-    void Start ()
+    void Start()
     {
         _GSM = GameObject.Find("GlobalStateMachine").GetComponent<GlobalStateMachine>();
         player = GameObject.Find("Player");
-
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update()
+    {
         switch (_GSM.globalState)
         {
             case GlobalState.Default:
@@ -27,12 +27,13 @@ public class GlobalSquadMovement : MonoBehaviour
 
             case GlobalState.Attack:
                 FillSquadList();
-                foreach(GameObject squaddie in squaddies)
-                        squaddie.GetComponent<StateMachine>().memberState = MemberState.Attack;
+                foreach (GameObject squaddie in squaddies)
+                    squaddie.GetComponent<StateMachine>().memberState = MemberState.Attack;
                 break;
 
             case GlobalState.FindCover:
-                //managed by detection
+                foreach (GameObject squaddie in squaddies)
+                    squaddie.GetComponent<SquadMovement>().RunToCover();
                 break;
 
             case GlobalState.FormV:
@@ -96,7 +97,8 @@ public class GlobalSquadMovement : MonoBehaviour
                 toggle = true;
                 change_mult++;
             }
-            squaddie.GetComponent<SquadMovement>().SetTargetPos(leaderPos + pos_change);
+            if (squaddie != squaddies[0])
+                squaddie.GetComponent<SquadMovement>().SetTargetPos(leaderPos + pos_change);
         }
     }
 
@@ -110,13 +112,10 @@ public class GlobalSquadMovement : MonoBehaviour
 
         foreach (GameObject squaddie in squaddies)
         {
-
             temp_offset += new Vector3(offset_change * multiplier, 0f, 0f);
             multiplier++;
             print(multiplier);
             squaddie.GetComponent<SquadMovement>().SetTargetPos(temp_offset);        //agent.SetDestination(detection.FormLineTransform());
         }
-     }
-    
+    }
 }
-
